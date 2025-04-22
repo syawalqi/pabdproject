@@ -41,6 +41,8 @@ namespace pabdproject
 
         }
 
+        public static int LoggedInUserID = -1;
+
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtusername.Text.Trim();
@@ -54,23 +56,25 @@ namespace pabdproject
 
             string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
-            // Or use SQL Auth
-
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     conn.Open();
 
-                    string query = "SELECT COUNT(*) FROM Karyawan WHERE Nama = @username AND Passwd = @password";
+                    // SQL query to get the ID_Karyawan for the logged-in user
+                    string query = "SELECT ID_Karyawan FROM Karyawan WHERE Nama = @username AND Passwd = @password";
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@username", username);
                     cmd.Parameters.AddWithValue("@password", password);
 
-                    int count = (int)cmd.ExecuteScalar();
+                    // Execute the query and get the user ID
+                    object result = cmd.ExecuteScalar();
 
-                    if (count > 0)
+                    if (result != null)
                     {
+                        LoggedInUserID = (int)result; // Store the logged-in user's ID
+
                         MessageBox.Show("Login successful!");
 
                         // Open Form2 and hide the login form (Form3)
@@ -80,9 +84,8 @@ namespace pabdproject
                     }
                     else
                     {
-                        MessageBox.Show($"Invalid username or password.\nEntered: {username} / {password}");
+                        MessageBox.Show("Invalid username or password.");
                     }
-
                 }
                 catch (Exception ex)
                 {
