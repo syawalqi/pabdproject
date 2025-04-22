@@ -21,6 +21,7 @@ namespace pabdproject
             userRole = role;
         }
 
+
         private void Form5_Load(object sender, EventArgs e)
         {
             LoadAttendanceData(); // Cleaner method call
@@ -93,8 +94,8 @@ namespace pabdproject
             // SQL connection string
             string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
-            // Query to join Kehadiran (attendance) and Karyawan (employee) tables
-            string query = "SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar " +
+            // Query to join Kehadiran (attendance) and Karyawan (employee) tables and include Waktu_Masuk
+            string query = "SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status " +
                            "FROM Kehadiran h " +
                            "INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
 
@@ -114,6 +115,9 @@ namespace pabdproject
 
                     // Bind the DataTable to the DataGridView
                     dataGridView1.DataSource = dt;
+
+                    // Optionally, format the Waktu_Masuk column as a date
+                    dataGridView1.Columns["Waktu_Masuk"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
                 }
                 catch (Exception ex)
                 {
@@ -121,6 +125,7 @@ namespace pabdproject
                 }
             }
         }
+
 
     }
 }

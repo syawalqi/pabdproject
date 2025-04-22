@@ -108,14 +108,15 @@ namespace pabdproject
                         return;
                     }
 
-                    // Insert attendance into the Kehadiran table
-                    string query = "INSERT INTO Kehadiran (ID_Karyawan, Tanggal, Status) VALUES (@userID, @selectedDate, @status)";
+                    // Insert attendance into the Kehadiran table with the date they took the attendance
+                    string query = "INSERT INTO Kehadiran (ID_Karyawan, Tanggal, Status, Waktu_Masuk) VALUES (@userID, @selectedDate, @status, @WaktuMasuk)";
                     SqlCommand cmd = new SqlCommand(query, conn);
 
                     // Add parameters to avoid SQL injection
                     cmd.Parameters.AddWithValue("@userID", userID);
                     cmd.Parameters.AddWithValue("@selectedDate", selectedDate);
                     cmd.Parameters.AddWithValue("@status", status);
+                    cmd.Parameters.AddWithValue("@WaktuMasuk", DateTime.Now); // The current date and time of attendance registration
 
                     // Execute the insert query
                     cmd.ExecuteNonQuery();
@@ -140,7 +141,7 @@ namespace pabdproject
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            // Handle date picker changes if needed
+
         }
     }
 }
