@@ -23,7 +23,7 @@ namespace pabdproject
 
         }
 
-        private void Form4_Load(object sender, EventArgs e)
+        private void Form5_Load(object sender, EventArgs e)
         {
             // SQL connection string
             string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
