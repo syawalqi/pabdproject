@@ -19,6 +19,8 @@ namespace pabdproject
             InitializeComponent();
         }
 
+        public static string LoggedInUserName { get; set; }  // Static property to store the username
+
         private void Username_Click(object sender, EventArgs e)
         {
             ToolTip tip = new ToolTip();
@@ -74,6 +76,7 @@ namespace pabdproject
                     {
                         LoggedInUserID = (int)reader["ID_Karyawan"]; // Store the logged-in user's ID
                         string userRole = reader["Role"].ToString(); // Get the user's role from the database
+                        LoggedInUserName = username;  // Set the logged-in user's name
 
                         MessageBox.Show("Login successful!");
 

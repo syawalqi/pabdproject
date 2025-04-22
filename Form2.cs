@@ -79,5 +79,20 @@ namespace pabdproject
             }
         }
 
+        private void label4_Click(object sender, EventArgs e)
+        {
+            // Check if the logged-in user name is available
+            if (!string.IsNullOrEmpty(Form3.LoggedInUserName))
+            {
+                // Display the logged-in user's name in label3
+                label4.Text = "" + Form3.LoggedInUserName;
+            }
+            else
+            {
+                // Handle case where no user is logged in (optional)
+                label4.Text = "No user logged in";
+            }
+        }
+
     }
 }
