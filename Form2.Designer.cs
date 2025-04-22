@@ -62,7 +62,6 @@
             this.button4.TabIndex = 3;
             this.button4.Text = "NOT AVAILABLE";
             this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
@@ -73,7 +72,7 @@
             this.button3.TabIndex = 2;
             this.button3.Text = "Daftar Karyawan";
             this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
             // button2
             // 
@@ -84,7 +83,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "Check Presensi";
             this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // button1
             // 
@@ -95,7 +94,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Presensi";
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // label1
             // 
@@ -106,7 +105,6 @@
             this.label1.Size = new System.Drawing.Size(105, 32);
             this.label1.TabIndex = 1;
             this.label1.Text = "HOME ";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -117,7 +115,6 @@
             this.label2.Size = new System.Drawing.Size(421, 52);
             this.label2.TabIndex = 1;
             this.label2.Text = "SELAMAT DATANG";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
@@ -128,7 +125,6 @@
             this.label3.Size = new System.Drawing.Size(53, 46);
             this.label3.TabIndex = 2;
             this.label3.Text = "...";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // Form2
             // 

@@ -62,23 +62,23 @@ namespace pabdproject
                 {
                     conn.Open();
 
-                    // SQL query to get the ID_Karyawan for the logged-in user
-                    string query = "SELECT ID_Karyawan FROM Karyawan WHERE Nama = @username AND Passwd = @password";
+                    // SQL query to get the ID_Karyawan and Role for the logged-in user
+                    string query = "SELECT ID_Karyawan, Role FROM Karyawan WHERE Nama = @username AND Passwd = @password";
                     SqlCommand cmd = new SqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@username", username);
                     cmd.Parameters.AddWithValue("@password", password);
 
-                    // Execute the query and get the user ID
-                    object result = cmd.ExecuteScalar();
-
-                    if (result != null)
+                    // Execute the query and get the user ID and role
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
                     {
-                        LoggedInUserID = (int)result; // Store the logged-in user's ID
+                        LoggedInUserID = (int)reader["ID_Karyawan"]; // Store the logged-in user's ID
+                        string userRole = reader["Role"].ToString(); // Get the user's role from the database
 
                         MessageBox.Show("Login successful!");
 
-                        // Open Form2 and hide the login form (Form3)
-                        Form2 form2 = new Form2();
+                        // Open Form2 and pass the user's role to it
+                        Form2 form2 = new Form2(userRole); // Pass the role here
                         form2.Show();
                         this.Hide(); // or this.Close(); if you want to fully exit Form3
                     }

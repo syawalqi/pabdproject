@@ -11,26 +11,44 @@ using System.Windows.Forms;
 
 namespace pabdproject
 {
-    public partial class Form1: Form
+    public partial class Form1 : Form
     {
-        public Form1()
+        private string userRole;
+
+        // Modified constructor to accept user role as a parameter
+        public Form1(string role)
         {
             InitializeComponent();
+            userRole = role;  // Store the role for later use
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            // You can use the role to enable/disable buttons or customize the form behavior here.
+            if (userRole == "employee")
+            {
+                // Example: Disable certain controls for employees
+                radioButton1.Enabled = false;
+                radioButton2.Enabled = false;
+                // Further customization based on role...
+            }
+            else if (userRole == "admin")
+            {
+                // Example: Enable controls for admins
+                radioButton1.Enabled = true;
+                radioButton2.Enabled = true;
+                // Further customization based on role...
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-
+            // Handle radio button changes if needed
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-
+            // Handle radio button changes if needed
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -108,24 +126,18 @@ namespace pabdproject
             }
         }
 
-
-
         private void button2_Click(object sender, EventArgs e)
         {
-            // Create a new instance of Form2
-            Form2 form2 = new Form2();
-
-            // Show Form2
+            // Pass the role when opening Form2
+            Form2 form2 = new Form2(userRole);
             form2.Show();
 
-            // Optionally, you can hide Form1 if you don't want it visible after opening Form2
             this.Hide();
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-
+            // Handle date picker changes if needed
         }
-
     }
 }
