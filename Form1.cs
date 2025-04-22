@@ -24,20 +24,23 @@ namespace pabdproject
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // You can use the role to enable/disable buttons or customize the form behavior here.
+            // Use the role to enable/disable buttons or customize the form behavior here.
             if (userRole == "employee")
             {
-                // Example: Disable certain controls for employees
-                radioButton1.Enabled = false;
-                radioButton2.Enabled = false;
-                // Further customization based on role...
+                // Allow employees to select attendance status (don't disable radio buttons)
+                radioButton1.Enabled = true;  // Enable "Hadir"
+                radioButton2.Enabled = true;  // Enable "Tidak Hadir"
+
+                // You can customize other controls if needed for employees
+                // For example, if there's an admin-only feature, you can disable that
+                // e.g., button3.Enabled = false; or hide certain controls
             }
             else if (userRole == "admin")
             {
-                // Example: Enable controls for admins
+                // Enable controls for admins (if needed, keep existing settings for admins)
                 radioButton1.Enabled = true;
                 radioButton2.Enabled = true;
-                // Further customization based on role...
+                // Further customization for admins...
             }
         }
 
@@ -61,7 +64,7 @@ namespace pabdproject
             }
             else if (radioButton2.Checked)
             {
-                status = "Tidak Hadir";
+                status = "Izin";
             }
             else
             {
@@ -132,7 +135,7 @@ namespace pabdproject
             Form2 form2 = new Form2(userRole);
             form2.Show();
 
-            this.Hide();
+            this.Hide(); // Hide Form1
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)

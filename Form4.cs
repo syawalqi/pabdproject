@@ -13,13 +13,25 @@ namespace pabdproject
 {
     public partial class Form4 : Form
     {
-        public Form4()
+        private string userRole;
+
+        // Modified constructor to accept user role as a parameter
+        public Form4(string role)
         {
             InitializeComponent();
+            userRole = role; // Store the role for later use
         }
 
         private void Form4_Load(object sender, EventArgs e)
         {
+            // Use the role to enable/disable buttons or customize the form behavior here
+            if (userRole == "employee")
+            {
+                // Example: Disable buttons/features for employees
+                button2.Enabled = false; // Disable delete button for employees
+            }
+
+            // Load Karyawan data after customizing based on role
             LoadKaryawanData();
         }
 
@@ -27,7 +39,6 @@ namespace pabdproject
         private void LoadKaryawanData()
         {
             string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
-
             string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk FROM Karyawan";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -35,11 +46,9 @@ namespace pabdproject
                 try
                 {
                     conn.Open();
-
                     SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     DataTable dt = new DataTable();
                     da.Fill(dt);
-
                     dataGridView1.DataSource = dt;
                 }
                 catch (Exception ex)
@@ -52,6 +61,12 @@ namespace pabdproject
         // Delete selected row from the Karyawan table
         private void button2_Click(object sender, EventArgs e)
         {
+            if (userRole == "employee")
+            {
+                MessageBox.Show("You do not have permission to delete records.");
+                return;
+            }
+
             if (dataGridView1.SelectedRows.Count > 0)
             {
                 try
@@ -90,33 +105,13 @@ namespace pabdproject
         // Button to go back to Form2
         private void button1_Click(object sender, EventArgs e)
         {
-            // Provide the required argument for the role (e.g., "Admin" or "Employee")
-            string role = "Admin"; // or "Employee" based on your logic
-
-            // Now pass the role when creating Form2
-            Form2 form2 = new Form2(role);
+            // Pass the role when opening Form2
+            Form2 form2 = new Form2(userRole); // Pass the role here
             form2.Show();
             this.Hide();
         }
-
-        // You can add a method to delete from Admin table as well, similar to the above logic
-        private void DeleteAdminRecord(int adminID)
-        {
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
-            string query = "DELETE FROM Admin WHERE ID_Admin = @ID_Admin";
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@ID_Admin", adminID);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
-
-
     }
+
+
 }
+

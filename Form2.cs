@@ -25,80 +25,59 @@ namespace pabdproject
             // Disable or hide buttons based on the role
             if (userRole == "employee")
             {
-                button2.Enabled = false; // Disables button2 (Check Presensi)
-                button3.Enabled = false; // Disables button3 (Daftar Karyawan)
-                button4.Enabled = false; // Optionally, disable button4 if it's not needed
+                button2.Enabled = false; // Presensi check
+                button3.Enabled = false; // Karyawan list
+                button4.Enabled = false; // Optional admin feature
             }
             else if (userRole == "admin")
             {
-                // Enable buttons for admin
-                button2.Enabled = true;  // Check Presensi
-                button3.Enabled = true;  // Daftar Karyawan
-                button4.Enabled = true;  // Optionally, enable button4 for admin
+                button2.Enabled = true;
+                button3.Enabled = true;
+                button4.Enabled = true;
             }
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Your logic for button4
-            // You can either leave this empty or add the desired functionality
             MessageBox.Show("This feature is not yet available.");
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            // Define the role (for example, based on user data or fixed value)
-            string role = "Admin";  // or you can use dynamic role based on your logic
-
-            // Create a new instance of Form1 and pass the role
-            Form1 form1 = new Form1(role);
-
-            // Show Form1
+            // Navigate to Form1 (Presensi input)
+            Form1 form1 = new Form1(userRole);  // 👈 Pass role here
             form1.Show();
-
-            // Hide Form2
             this.Hide();
-
         }
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            // Check if the user is an admin, else show a message
             if (userRole == "employee")
             {
                 MessageBox.Show("This feature is not available for employees.");
             }
             else
             {
-                // Create a new instance of Form5 (Check Presensi)
-                Form5 form5 = new Form5();
-
-                // Show Form5
+                Form5 form5 = new Form5(userRole);  // 👈 Pass role here
                 form5.Show();
-
-                // Optionally, you can hide Form2 if you don't want it visible after opening Form5
                 this.Hide();
             }
         }
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            // Check if the user is an admin, else show a message
             if (userRole == "employee")
             {
                 MessageBox.Show("This feature is not available for employees.");
             }
             else
             {
-                // Create a new instance of Form4 (Daftar Karyawan)
-                Form4 form4 = new Form4();
-
-                // Show Form4
+                // Pass the user role correctly to Form4
+                Form4 form4 = new Form4(userRole);  // 👈 Pass role here
                 form4.Show();
-
-                // Optionally, you can hide Form2 if you don't want it visible after opening Form4
                 this.Hide();
             }
         }
+
     }
 }
