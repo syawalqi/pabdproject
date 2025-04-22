@@ -46,7 +46,7 @@ namespace pabdproject
             form1.Show();
 
             // Optionally, you can hide Form1 if you don't want it visible after opening Form2
-            //this.Hide();
+            this.Hide();
 
         }
 
@@ -64,7 +64,7 @@ namespace pabdproject
             form4.Show();
 
             // Optionally, you can hide Form2 if you don't want it visible after opening Form4
-            //this.Hide();
+            this.Hide();
 
         }
 

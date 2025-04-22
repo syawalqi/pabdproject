@@ -46,7 +46,7 @@ namespace pabdproject
             form2.Show();
 
             // Optionally, you can hide Form1 if you don't want it visible after opening Form2
-            //this.Hide();
+            this.Hide();
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
