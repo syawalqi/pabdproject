@@ -1,0 +1,131 @@
+CREATE DATABASE MANDAK;
+
+CREATE TABLE Karyawan (
+    ID_Karyawan INT IDENTITY(1,1) PRIMARY KEY,
+    Nama VARCHAR(100) NOT NULL,
+    Jabatan VARCHAR(50) NOT NULL,
+    Departemen VARCHAR(50) NOT NULL,
+    Tanggal_Masuk DATE NOT NULL,
+);
+
+select * from Karyawan
+INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk)
+VALUES ('Budi', 'Staff', 'Manusia', '2024-01-15');
+
+INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk, Role)
+VALUES ('Budiss', 'Staff', 'Manusia', '2024-01-15', 'admin');
+
+
+ALTER TABLE Karyawan
+ADD Passwd VARCHAR(255) NOT NULL DEFAULT 'defaultPass';
+
+ALTER TABLE Karyawan ADD Role VARCHAR(20) NOT NULL DEFAULT 'employee';
+
+
+CREATE TABLE Kehadiran (
+    ID_Kehadiran INT IDENTITY(1,1) PRIMARY KEY,
+    ID_Karyawan INT NOT NULL CHECK (ID_Karyawan > 0),
+    Tanggal DATE NOT NULL,
+    Waktu_Masuk DATETIME2 NULL,
+    Waktu_Keluar DATETIME2 NULL,
+    Status VARCHAR(20) CHECK (Status IN ('Hadir', 'Izin', 'Sakit', 'Alpha')) NOT NULL,
+    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan) ON DELETE CASCADE
+);
+select * from Kehadiran
+ALTER TABLE Kehadiran
+    ALTER COLUMN Waktu_Masuk DATETIME2 NULL;
+
+ALTER TABLE Kehadiran
+    ALTER COLUMN Waktu_Keluar DATETIME2 NULL;
+
+
+CREATE TABLE Cuti (
+    ID_Cuti INT IDENTITY(1,1) PRIMARY KEY,
+    ID_Karyawan INT NOT NULL,
+    Tanggal_Mulai DATE NOT NULL,
+    Tanggal_Selesai DATE NOT NULL,
+    CONSTRAINT CK_Tanggal_Cuti CHECK (Tanggal_Selesai >= Tanggal_Mulai),
+    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan) ON DELETE CASCADE
+);
+select * from Cuti
+
+
+CREATE TABLE Shifts (
+    ID_Shift INT IDENTITY(1,1) PRIMARY KEY,
+    ID_Karyawan INT NOT NULL CHECK (ID_Karyawan > 0),
+    Shift_Mulai TIME NOT NULL,
+    Shift_Selesai TIME NOT NULL,
+    CONSTRAINT CK_Shift CHECK (Shift_Selesai > Shift_Mulai),
+    Hari_Kerja NVARCHAR(20) CHECK (Hari_Kerja IN ('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')) NOT NULL,
+    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan) ON DELETE CASCADE
+);
+select * from Shifts
+
+
+CREATE TABLE Gaji (
+    ID_Gaji INT IDENTITY(1,1) PRIMARY KEY,
+    ID_Karyawan INT NOT NULL CHECK (ID_Karyawan > 0),
+    Gaji_Pokok DECIMAL(18,2) CHECK (Gaji_Pokok >= 0) NOT NULL,
+    Tunjangan DECIMAL(18,2) CHECK (Tunjangan >= 0) NULL,
+    Potongan DECIMAL(18,2) CHECK (Potongan >= 0) NULL,
+    Total_Gaji AS (Gaji_Pokok + ISNULL(Tunjangan, 0) - ISNULL(Potongan, 0)) PERSISTED,
+    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan) ON DELETE CASCADE
+);
+select * from Gaji
+
+-- 1. Stored Procedure untuk menghitung jumlah absensi karyawan berdasarkan status
+CREATE PROCEDURE HitungAbsensiKaryawan
+    @ID_Karyawan INT
+AS
+BEGIN
+    SELECT 
+        Status, 
+        COUNT(*) AS Jumlah_Hari
+    FROM Kehadiran
+    WHERE ID_Karyawan = @ID_Karyawan
+    GROUP BY Status;
+END
+
+-- 2. View untuk laporan absensi karyawan
+CREATE VIEW LaporanKehadiranKaryawan AS
+SELECT 
+    k.ID_Karyawan, 
+    k.Nama, 
+    h.Tanggal, 
+    h.Status, 
+    h.Waktu_Masuk, 
+    h.Waktu_Keluar
+FROM Karyawan k
+JOIN Kehadiran h ON k.ID_Karyawan = h.ID_Karyawan;
+
+
+-- 3. Trigger untuk otomatis memperbarui status cuti jika kehadiran terjadi dalam rentang cuti
+
+CREATE TRIGGER CekStatusCuti
+ON Kehadiran
+AFTER INSERT
+AS
+BEGIN
+    UPDATE Cuti
+    SET Tanggal_Selesai = Tanggal_Selesai -- dummy update untuk menandai
+    FROM Cuti c
+    JOIN inserted i ON c.ID_Karyawan = i.ID_Karyawan
+    WHERE i.Tanggal BETWEEN c.Tanggal_Mulai AND c.Tanggal_Selesai;
+    -- Catatan: dalam sistem nyata, bisa ditambah kolom Status dan diubah di sini
+END
+
+
+-- 4. Stored Procedure untuk menampilkan jumlah absensi tiap karyawan
+
+CREATE PROCEDURE JumlahAbsensiKaryawan
+AS
+BEGIN
+    SELECT k.ID_Karyawan, k.Nama, COUNT(h.ID_Kehadiran) AS Jumlah_Absensi
+    FROM Karyawan k
+    LEFT JOIN Kehadiran h ON k.ID_Karyawan = h.ID_Karyawan
+    GROUP BY k.ID_Karyawan, k.Nama;
+END
+
+EXEC JumlahAbsensiKaryawan;
+
+
