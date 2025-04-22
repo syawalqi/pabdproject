@@ -46,7 +46,7 @@ namespace pabdproject
             form1.Show();
 
             // Optionally, you can hide Form1 if you don't want it visible after opening Form2
-            this.Hide();
+            //this.Hide();
 
         }
 
@@ -57,6 +57,14 @@ namespace pabdproject
 
         private void button3_Click(object sender, EventArgs e)
         {
+            // Create a new instance of Form4
+            Form4 form4 = new Form4();
+
+            // Show Form4
+            form4.Show();
+
+            // Optionally, you can hide Form2 if you don't want it visible after opening Form4
+            //this.Hide();
 
         }
 

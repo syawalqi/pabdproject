@@ -39,7 +39,14 @@ namespace pabdproject
 
         private void button2_Click(object sender, EventArgs e)
         {
+            // Create a new instance of Form2
+            Form2 form2 = new Form2();
 
+            // Show Form2
+            form2.Show();
+
+            // Optionally, you can hide Form1 if you don't want it visible after opening Form2
+            //this.Hide();
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
