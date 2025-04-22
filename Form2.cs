@@ -39,6 +39,14 @@ namespace pabdproject
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // Create a new instance of Form2
+            Form1 form1 = new Form1();
+
+            // Show Form2
+            form1.Show();
+
+            // Optionally, you can hide Form1 if you don't want it visible after opening Form2
+            this.Hide();
 
         }
 

@@ -52,7 +52,9 @@ namespace pabdproject
                 return;
             }
 
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA Catalog=MANDAK;Integrated Security=True"; // Or use SQL Auth
+            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+
+            // Or use SQL Auth
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -78,8 +80,9 @@ namespace pabdproject
                     }
                     else
                     {
-                        MessageBox.Show("Invalid username or password.");
+                        MessageBox.Show($"Invalid username or password.\nEntered: {username} / {password}");
                     }
+
                 }
                 catch (Exception ex)
                 {
