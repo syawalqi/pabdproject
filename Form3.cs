@@ -56,6 +56,13 @@ namespace pabdproject
                 return;
             }
 
+            // 🔐 Check if password is at least 8 characters
+            if (password.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters long.");
+                return;
+            }
+
             string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -96,6 +103,7 @@ namespace pabdproject
                 }
             }
         }
+
 
     }
 }
