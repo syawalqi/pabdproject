@@ -44,7 +44,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(1205, 411);
+            this.dataGridView1.Size = new System.Drawing.Size(729, 411);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -53,7 +53,7 @@
             this.button1.BackColor = System.Drawing.Color.PaleGreen;
             this.button1.Location = new System.Drawing.Point(31, 24);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 46);
+            this.button1.Size = new System.Drawing.Size(140, 45);
             this.button1.TabIndex = 1;
             this.button1.Text = "Kembali";
             this.button1.UseVisualStyleBackColor = false;
@@ -62,9 +62,9 @@
             // button2
             // 
             this.button2.BackColor = System.Drawing.Color.Red;
-            this.button2.Location = new System.Drawing.Point(1111, 62);
+            this.button2.Location = new System.Drawing.Point(896, 406);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(125, 50);
+            this.button2.Size = new System.Drawing.Size(244, 50);
             this.button2.TabIndex = 2;
             this.button2.Text = "Hapus";
             this.button2.UseVisualStyleBackColor = false;
@@ -73,9 +73,9 @@
             // button3
             // 
             this.button3.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.button3.Location = new System.Drawing.Point(943, 62);
+            this.button3.Location = new System.Drawing.Point(896, 262);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(125, 50);
+            this.button3.Size = new System.Drawing.Size(244, 50);
             this.button3.TabIndex = 3;
             this.button3.Text = "Update";
             this.button3.UseVisualStyleBackColor = false;
@@ -84,9 +84,9 @@
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.LawnGreen;
-            this.button4.Location = new System.Drawing.Point(772, 62);
+            this.button4.Location = new System.Drawing.Point(896, 125);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(125, 50);
+            this.button4.Size = new System.Drawing.Size(244, 50);
             this.button4.TabIndex = 4;
             this.button4.Text = "Tambah";
             this.button4.UseVisualStyleBackColor = false;
