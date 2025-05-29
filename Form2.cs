@@ -12,7 +12,7 @@ namespace pabdproject
 {
     public partial class Form2 : Form
     {
-        private string userRole;
+        private readonly string userRole;
 
         public Form2(string role)
         {
@@ -22,34 +22,30 @@ namespace pabdproject
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            // Tampilkan nama user yang login
-            label4.Text = "Selamat Datang, " + Form3.LoggedInUserName;
+            // Display logged-in username
+            label4.Text = $"Selamat Datang, {Form3.LoggedInUserName}";
 
-            // Atur tampilan berdasarkan role
+            // Configure UI based on user role
             if (userRole == "employee")
             {
-                button2.Visible = false; // Presensi check - hilang
-                button3.Visible = false; // Karyawan list - hilang
-                button4.Visible = false; // Fitur admin - hilang
+                button2.Visible = false; // Hide "Presensi Check"
+                button3.Visible = false; // Hide "Karyawan List"
+                button4.Visible = false; // Hide admin feature button
             }
             else if (userRole == "admin")
             {
+                // Show admin-specific features
                 button2.Visible = true;
                 button3.Visible = true;
                 button4.Visible = true;
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("This feature is not yet available.");
-        }
-
         private void button1_Click_1(object sender, EventArgs e)
         {
             // Navigate to Form1 (Presensi input)
-            Form1 form1 = new Form1(userRole);  // 👈 Pass role here
-            form1.Show();
+            var presensiForm = new Form1(userRole);
+            presensiForm.Show();
             this.Hide();
         }
 
@@ -58,13 +54,13 @@ namespace pabdproject
             if (userRole == "employee")
             {
                 MessageBox.Show("This feature is not available for employees.");
+                return;
             }
-            else
-            {
-                Form5 form5 = new Form5(userRole);  // 👈 Pass role here
-                form5.Show();
-                this.Hide();
-            }
+
+            // Navigate to Form5 (Attendance list)
+            var attendanceForm = new Form5(userRole);
+            attendanceForm.Show();
+            this.Hide();
         }
 
         private void button3_Click_1(object sender, EventArgs e)
@@ -72,31 +68,32 @@ namespace pabdproject
             if (userRole == "employee")
             {
                 MessageBox.Show("This feature is not available for employees.");
+                return;
             }
-            else
-            {
-                // Pass the user role correctly to Form4
-                Form4 form4 = new Form4(userRole);  // 👈 Pass role here
-                form4.Show();
-                this.Hide();
-            }
+
+            // Navigate to Form4 (Karyawan management)
+            var karyawanForm = new Form4(userRole);
+            karyawanForm.Show();
+            this.Hide();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            // Placeholder for future feature
+            MessageBox.Show("This feature is not yet available.");
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-            // Check if the logged-in user name is available
+            // Refresh display of logged-in username when label clicked
             if (!string.IsNullOrEmpty(Form3.LoggedInUserName))
             {
-                // Display the logged-in user's name in label3
-                label4.Text = "" + Form3.LoggedInUserName;
+                label4.Text = Form3.LoggedInUserName;
             }
             else
             {
-                // Handle case where no user is logged in (optional)
                 label4.Text = "No user logged in";
             }
         }
-
-
     }
 }

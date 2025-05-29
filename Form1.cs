@@ -56,8 +56,8 @@ namespace pabdproject
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // Determine attendance status from radio buttons
             string status = "";
-            // Check if any radio button is selected
             if (radioButton1.Checked)
             {
                 status = "Hadir";
@@ -72,61 +72,53 @@ namespace pabdproject
                 return;
             }
 
-            // Ensure the date is selected
+            // Get the selected date
             DateTime selectedDate = dateTimePicker1.Value;
 
-            // Use the static variable LoggedInUserID to get the logged-in user ID
-            int userID = Form3.LoggedInUserID; // Access the logged-in user ID from Form3
-
-            // Check if the user is logged in
+            // Get logged-in user ID from Form3
+            int userID = Form3.LoggedInUserID;
             if (userID == -1)
             {
                 MessageBox.Show("No user is logged in.");
                 return;
             }
 
-            // SQL connection string
-            string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+            // Connection string for SQL Server
+            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                try
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    // Check if the user exists in the Karyawan table
-                    string checkUserQuery = "SELECT COUNT(*) FROM Karyawan WHERE ID_Karyawan = @userID";
-                    SqlCommand checkCmd = new SqlCommand(checkUserQuery, conn);
-                    checkCmd.Parameters.AddWithValue("@userID", userID);
-
-                    int userExists = (int)checkCmd.ExecuteScalar();
-
-                    // If the user doesn't exist, show an error message
-                    if (userExists == 0)
+                    using (SqlCommand cmd = new SqlCommand("TambahAttendance", conn))
                     {
-                        MessageBox.Show("User not found. Please ensure the user exists in the Karyawan table.");
-                        return;
+                        // Specify that this is a stored procedure call
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Add parameters safely to avoid SQL injection
+                        cmd.Parameters.AddWithValue("@ID_Karyawan", userID);
+                        cmd.Parameters.AddWithValue("@Tanggal", selectedDate);
+                        cmd.Parameters.AddWithValue("@Status", status);
+                        cmd.Parameters.AddWithValue("@Waktu_Masuk", DateTime.Now);
+
+                        // Execute the stored procedure
+                        cmd.ExecuteNonQuery();
+
+                        MessageBox.Show("Attendance recorded successfully!");
                     }
-
-                    // Insert attendance into the Kehadiran table with the date they took the attendance
-                    string query = "INSERT INTO Kehadiran (ID_Karyawan, Tanggal, Status, Waktu_Masuk) VALUES (@userID, @selectedDate, @status, @WaktuMasuk)";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-
-                    // Add parameters to avoid SQL injection
-                    cmd.Parameters.AddWithValue("@userID", userID);
-                    cmd.Parameters.AddWithValue("@selectedDate", selectedDate);
-                    cmd.Parameters.AddWithValue("@status", status);
-                    cmd.Parameters.AddWithValue("@WaktuMasuk", DateTime.Now); // The current date and time of attendance registration
-
-                    // Execute the insert query
-                    cmd.ExecuteNonQuery();
-
-                    MessageBox.Show("Attendance recorded successfully!");
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message);
-                }
+            }
+            catch (SqlException sqlEx)
+            {
+                // Handle SQL errors such as user not found
+                MessageBox.Show("Database error: " + sqlEx.Message);
+            }
+            catch (Exception ex)
+            {
+                // Handle other possible errors
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
 
