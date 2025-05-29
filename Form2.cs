@@ -22,18 +22,21 @@ namespace pabdproject
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            // Disable or hide buttons based on the role
+            // Tampilkan nama user yang login
+            label4.Text = "Selamat Datang, " + Form3.LoggedInUserName;
+
+            // Atur tampilan berdasarkan role
             if (userRole == "employee")
             {
-                button2.Enabled = false; // Presensi check
-                button3.Enabled = false; // Karyawan list
-                button4.Enabled = false; // Optional admin feature
+                button2.Visible = false; // Presensi check - hilang
+                button3.Visible = false; // Karyawan list - hilang
+                button4.Visible = false; // Fitur admin - hilang
             }
             else if (userRole == "admin")
             {
-                button2.Enabled = true;
-                button3.Enabled = true;
-                button4.Enabled = true;
+                button2.Visible = true;
+                button3.Visible = true;
+                button4.Visible = true;
             }
         }
 
@@ -93,6 +96,7 @@ namespace pabdproject
                 label4.Text = "No user logged in";
             }
         }
+
 
     }
 }

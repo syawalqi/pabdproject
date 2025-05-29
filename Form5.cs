@@ -41,11 +41,12 @@ namespace pabdproject
             // Check if a row is selected in the DataGridView
             if (dataGridView1.SelectedRows.Count > 0)
             {
+
                 // Get the ID_Kehadiran from the selected row (assuming it's in the first column)
                 int idKehadiran = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID_Kehadiran"].Value);
 
                 // SQL connection string
-                string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+                string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
 
                 // SQL query to delete the attendance record based on ID_Kehadiran
                 string query = "DELETE FROM Kehadiran WHERE ID_Kehadiran = @ID_Kehadiran";
@@ -92,7 +93,7 @@ namespace pabdproject
         private void LoadAttendanceData()
         {
             // SQL connection string
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+            string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
 
             // Query to join Kehadiran (attendance) and Karyawan (employee) tables and include Waktu_Masuk
             string query = "SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status " +
@@ -126,6 +127,10 @@ namespace pabdproject
             }
         }
 
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
 
     }
 }

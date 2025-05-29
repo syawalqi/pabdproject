@@ -38,8 +38,8 @@ namespace pabdproject
         // Load data from the Karyawan table
         private void LoadKaryawanData()
         {
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
-            string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk FROM Karyawan";
+            string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+            string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role FROM Karyawan";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -58,49 +58,60 @@ namespace pabdproject
             }
         }
 
-        // Delete selected row from the Karyawan table
+        // Update button2_Click (Delete) in Form4
         private void button2_Click(object sender, EventArgs e)
         {
             if (userRole == "employee")
             {
-                MessageBox.Show("You do not have permission to delete records.");
+                MessageBox.Show("Anda tidak memiliki izin untuk menghapus data.");
                 return;
             }
 
             if (dataGridView1.SelectedRows.Count > 0)
             {
-                try
+                DialogResult confirm = MessageBox.Show("Yakin ingin menghapus data karyawan ini?",
+                                                    "Konfirmasi Hapus",
+                                                    MessageBoxButtons.YesNo,
+                                                    MessageBoxIcon.Warning);
+
+                if (confirm == DialogResult.Yes)
                 {
-                    int idKaryawan = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID_Karyawan"].Value);
-
-                    string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
-                    string query = "DELETE FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan";
-
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    try
                     {
-                        conn.Open();
+                        int idKaryawan = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["ID_Karyawan"].Value);
 
-                        using (SqlCommand cmd = new SqlCommand(query, conn))
+                        string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+                        string query = "DELETE FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan";
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
                         {
-                            cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
-                            cmd.ExecuteNonQuery();
+                            conn.Open();
+                            using (SqlCommand cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
+                                int rowsAffected = cmd.ExecuteNonQuery();
+
+                                if (rowsAffected > 0)
+                                {
+                                    MessageBox.Show("Data karyawan berhasil dihapus.");
+                                    LoadKaryawanData();
+                                }
+                            }
                         }
                     }
-
-                    // Refresh the DataGridView after deletion
-                    LoadKaryawanData();
-                    MessageBox.Show("Record deleted successfully.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message);
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
                 }
             }
             else
             {
-                MessageBox.Show("Please select a record to delete.");
+                MessageBox.Show("Pilih data karyawan yang akan dihapus.");
             }
         }
+
+        // Similarly for the update button (button3_Click), add confirmation if needed
 
         // Button to go back to Form2
         private void button1_Click(object sender, EventArgs e)
@@ -156,7 +167,7 @@ namespace pabdproject
                     return;
                 }
 
-                string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+                string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
                 string query = "INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk, Passwd, Role) " +
                                "VALUES (@Nama, @Jabatan, @Departemen, @Tanggal_Masuk, @Passwd, @Role)";
 
@@ -208,96 +219,152 @@ namespace pabdproject
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select a record to update.");
+                MessageBox.Show("Pilih data karyawan yang akan diupdate.");
                 return;
             }
 
-            // Get selected row data
-            DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
-            int idKaryawan = Convert.ToInt32(selectedRow.Cells["ID_Karyawan"].Value);
-            string currentNama = selectedRow.Cells["Nama"].Value.ToString();
-            string currentJabatan = selectedRow.Cells["Jabatan"].Value.ToString();
-            string currentDepartemen = selectedRow.Cells["Departemen"].Value.ToString();
-            DateTime currentTanggalMasuk = Convert.ToDateTime(selectedRow.Cells["Tanggal_Masuk"].Value);
-
-            // Create popup form
-            Form popup = new Form()
+            try
             {
-                Width = 400,
-                Height = 350,
-                Text = "Update Karyawan"
-            };
+                // Get selected row data
+                DataGridViewRow selectedRow = dataGridView1.SelectedRows[0];
+                int idKaryawan = Convert.ToInt32(selectedRow.Cells["ID_Karyawan"].Value);
+                string currentNama = selectedRow.Cells["Nama"].Value.ToString();
+                string currentJabatan = selectedRow.Cells["Jabatan"].Value.ToString();
+                string currentDepartemen = selectedRow.Cells["Departemen"].Value.ToString();
+                DateTime currentTanggalMasuk = Convert.ToDateTime(selectedRow.Cells["Tanggal_Masuk"].Value);
 
-            Label lblNama = new Label() { Text = "Nama", Left = 10, Top = 20 };
-            TextBox txtNama = new TextBox() { Left = 150, Top = 20, Width = 200, Text = currentNama };
-
-            Label lblJabatan = new Label() { Text = "Jabatan", Left = 10, Top = 60 };
-            TextBox txtJabatan = new TextBox() { Left = 150, Top = 60, Width = 200, Text = currentJabatan };
-
-            Label lblDepartemen = new Label() { Text = "Departemen", Left = 10, Top = 100 };
-            TextBox txtDepartemen = new TextBox() { Left = 150, Top = 100, Width = 200, Text = currentDepartemen };
-
-            Label lblTanggal = new Label() { Text = "Tanggal Masuk", Left = 10, Top = 140 };
-            DateTimePicker dtTanggal = new DateTimePicker() { Left = 150, Top = 140, Width = 200, Format = DateTimePickerFormat.Short, Value = currentTanggalMasuk };
-
-            Button btnSave = new Button() { Text = "Update", Left = 150, Top = 200, Width = 100 };
-            btnSave.Click += (s, ev) =>
-            {
-                string nama = txtNama.Text.Trim();
-                string jabatan = txtJabatan.Text.Trim();
-                string departemen = txtDepartemen.Text.Trim();
-                DateTime tanggalMasuk = dtTanggal.Value;
-
-                if (string.IsNullOrEmpty(nama) || string.IsNullOrEmpty(jabatan) || string.IsNullOrEmpty(departemen))
+                // Create popup form
+                Form popup = new Form()
                 {
-                    MessageBox.Show("Please fill in all fields.");
-                    return;
-                }
+                    Width = 450,
+                    Height = 350,
+                    Text = "Update Data Karyawan",
+                    StartPosition = FormStartPosition.CenterScreen,
+                    FormBorderStyle = FormBorderStyle.FixedDialog,
+                    MaximizeBox = false,
+                    MinimizeBox = false
+                };
 
-                string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
-                string query = "UPDATE Karyawan SET Nama = @Nama, Jabatan = @Jabatan, Departemen = @Departemen, Tanggal_Masuk = @Tanggal_Masuk WHERE ID_Karyawan = @ID_Karyawan";
+                // Tambahkan kontrol ke form
+                Label lblNama = new Label() { Text = "Nama:", Left = 20, Top = 20, Width = 100 };
+                TextBox txtNama = new TextBox() { Left = 150, Top = 20, Width = 250, Text = currentNama };
 
+                Label lblJabatan = new Label() { Text = "Jabatan:", Left = 20, Top = 60, Width = 100 };
+                TextBox txtJabatan = new TextBox() { Left = 150, Top = 60, Width = 250, Text = currentJabatan };
+
+                Label lblDepartemen = new Label() { Text = "Departemen:", Left = 20, Top = 100, Width = 100 };
+                TextBox txtDepartemen = new TextBox() { Left = 150, Top = 100, Width = 250, Text = currentDepartemen };
+
+                Label lblTanggal = new Label() { Text = "Tanggal Masuk:", Left = 20, Top = 140, Width = 100 };
+                DateTimePicker dtTanggal = new DateTimePicker()
+                {
+                    Left = 150,
+                    Top = 140,
+                    Width = 250,
+                    Format = DateTimePickerFormat.Short,
+                    Value = currentTanggalMasuk
+                };
+
+                Button btnUpdate = new Button() { Text = "Update", Left = 150, Top = 200, Width = 100 };
+                Button btnCancel = new Button() { Text = "Batal", Left = 260, Top = 200, Width = 100 };
+
+                // Event handler untuk tombol Update
+                btnUpdate.Click += (s, ev) =>
+                {
+                    if (string.IsNullOrEmpty(txtNama.Text) || string.IsNullOrEmpty(txtJabatan.Text) || string.IsNullOrEmpty(txtDepartemen.Text))
+                    {
+                        MessageBox.Show("Semua field harus diisi!");
+                        return;
+                    }
+
+                    DialogResult confirm = MessageBox.Show("Apakah Anda yakin ingin mengupdate data ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (confirm == DialogResult.Yes)
+                    {
+                        UpdateKaryawanData(
+                            idKaryawan,
+                            txtNama.Text.Trim(),
+                            txtJabatan.Text.Trim(),
+                            txtDepartemen.Text.Trim(),
+                            dtTanggal.Value
+                        );
+                        popup.Close();
+                    }
+                };
+
+                // Event handler untuk tombol Batal
+                btnCancel.Click += (s, ev) => popup.Close();
+
+                // Tambahkan kontrol ke form popup
+                popup.Controls.Add(lblNama);
+                popup.Controls.Add(txtNama);
+                popup.Controls.Add(lblJabatan);
+                popup.Controls.Add(txtJabatan);
+                popup.Controls.Add(lblDepartemen);
+                popup.Controls.Add(txtDepartemen);
+                popup.Controls.Add(lblTanggal);
+                popup.Controls.Add(dtTanggal);
+                popup.Controls.Add(btnUpdate);
+                popup.Controls.Add(btnCancel);
+
+                popup.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}\n\nDetail: {ex.StackTrace}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void UpdateKaryawanData(int id, string nama, string jabatan, string departemen, DateTime tanggalMasuk)
+        {
+            string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+            string query = @"UPDATE Karyawan 
+                    SET Nama = @Nama, 
+                        Jabatan = @Jabatan, 
+                        Departemen = @Departemen, 
+                        Tanggal_Masuk = @TanggalMasuk 
+                    WHERE ID_Karyawan = @ID";
+
+            try
+            {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    try
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        conn.Open();
-                        SqlCommand cmd = new SqlCommand(query, conn);
                         cmd.Parameters.AddWithValue("@Nama", nama);
                         cmd.Parameters.AddWithValue("@Jabatan", jabatan);
                         cmd.Parameters.AddWithValue("@Departemen", departemen);
-                        cmd.Parameters.AddWithValue("@Tanggal_Masuk", tanggalMasuk);
-                        cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
-                        cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@TanggalMasuk", tanggalMasuk);
+                        cmd.Parameters.AddWithValue("@ID", id);
 
-                        MessageBox.Show("Karyawan updated successfully.");
-                        popup.Close();
-                        LoadKaryawanData(); // Refresh the table
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error updating data: " + ex.Message);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Data berhasil diupdate!");
+                            LoadKaryawanData(); // Refresh data grid
+                        }
+                        else
+                        {
+                            MessageBox.Show("Tidak ada data yang diupdate. Periksa ID karyawan.");
+                        }
                     }
                 }
-            };
-
-            popup.Controls.Add(lblNama);
-            popup.Controls.Add(txtNama);
-            popup.Controls.Add(lblJabatan);
-            popup.Controls.Add(txtJabatan);
-            popup.Controls.Add(lblDepartemen);
-            popup.Controls.Add(txtDepartemen);
-            popup.Controls.Add(lblTanggal);
-            popup.Controls.Add(dtTanggal);
-            popup.Controls.Add(btnSave);
-
-            popup.ShowDialog();
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show($"Database error: {sqlEx.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
+
     }
 
 
