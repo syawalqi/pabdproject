@@ -5,7 +5,7 @@ CREATE TABLE Karyawan (
     Nama VARCHAR(100) NOT NULL,
     Jabatan VARCHAR(50) NOT NULL,
     Departemen VARCHAR(50) NOT NULL,
-    Tanggal_Masuk DATE NOT NULL,
+    Tanggal_Masuk DATE NOT NULL
 );
 
 select * from Karyawan
@@ -129,3 +129,67 @@ END
 EXEC JumlahAbsensiKaryawan;
 
 
+--- STORED PROCEDURE UNTUK KARYAWAN
+CREATE PROCEDURE TambahKaryawan -- Tambah karyawan
+    @Nama VARCHAR(100),
+    @Jabatan VARCHAR(50),
+    @Departemen VARCHAR(50),
+    @Tanggal_Masuk DATE,
+    @Passwd VARCHAR(255),
+    @Role VARCHAR(20)
+AS
+BEGIN
+    INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk, Passwd, Role)
+    VALUES (@Nama, @Jabatan, @Departemen, @Tanggal_Masuk, @Passwd, @Role);
+END;
+---- ----------------------------------------------------
+CREATE PROCEDURE UpdateKaryawan --UPDATE KARYAWAN
+    @ID_Karyawan INT,
+    @Nama VARCHAR(100),
+    @Jabatan VARCHAR(50),
+    @Departemen VARCHAR(50),
+    @Tanggal_Masuk DATE
+AS
+BEGIN
+    UPDATE Karyawan
+    SET Nama = @Nama,
+        Jabatan = @Jabatan,
+        Departemen = @Departemen,
+        Tanggal_Masuk = @Tanggal_Masuk
+    WHERE ID_Karyawan = @ID_Karyawan;
+END;
+
+---------------------------------------------------------------------
+
+CREATE PROCEDURE HapusKaryawan -- HAPUS KARYAWAN
+    @ID_Karyawan INT
+AS
+BEGIN
+    DELETE FROM Karyawan
+    WHERE ID_Karyawan = @ID_Karyawan;
+END;
+
+
+DROP PROCEDURE Tambah;
+
+-------------------------------------------
+CREATE PROCEDURE TambahAttendance ---- TAMBAH ATTENDANCE KARYAWAN
+    @ID_Karyawan INT,
+    @Tanggal DATE,
+    @Status NVARCHAR(50),
+    @Waktu_Masuk DATETIME
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Optional: Check if the user exists (you can skip this if you want)
+    IF NOT EXISTS (SELECT 1 FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan)
+    BEGIN
+        RAISERROR('User not found in Karyawan table.', 16, 1);
+        RETURN;
+    END
+
+    -- Insert attendance record
+    INSERT INTO Kehadiran (ID_Karyawan, Tanggal, Status, Waktu_Masuk)
+    VALUES (@ID_Karyawan, @Tanggal, @Status, @Waktu_Masuk);
+END;

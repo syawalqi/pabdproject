@@ -135,6 +135,13 @@ namespace pabdproject
                     return;
                 }
 
+                // Password length check: minimum 8 characters
+                if (txtPassword.Text.Trim().Length < 8)
+                {
+                    MessageBox.Show("Password must be at least 8 characters long.");
+                    return;
+                }
+
                 try
                 {
                     using (SqlConnection conn = new SqlConnection(connectionString))
