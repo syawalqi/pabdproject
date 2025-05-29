@@ -95,5 +95,32 @@ namespace pabdproject
                 label4.Text = "No user logged in";
             }
         }
+
+        private void Logout_Click(object sender, EventArgs e)
+        {
+            // Clear session info
+            Form3.LoggedInUserID = -1;
+            Form3.LoggedInUserName = string.Empty;
+
+            // Open the login form BEFORE closing current forms
+            Form3 loginForm = new Form3();
+            loginForm.Show();
+
+            // Close all other forms including current one except the login form
+            foreach (Form openForm in Application.OpenForms.Cast<Form>().ToList())
+            {
+                if (!(openForm is Form3))
+                {
+                    openForm.Close();
+                }
+            }
+
+            // Optionally, close current form if it's not login
+            if (!(this is Form3))
+            {
+                this.Close();
+            }
+        }
+
     }
 }
