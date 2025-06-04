@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.Caching;  // <-- Add this for MemoryCache
 
 namespace pabdproject
 {
@@ -15,6 +16,10 @@ namespace pabdproject
     {
         private readonly string userRole;
         private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+
+        // Cache instance and key
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private const string CacheKey = "AttendanceData";
 
         public Form5(string role)
         {
@@ -49,32 +54,47 @@ namespace pabdproject
 
         private void LoadAttendanceData()
         {
-            const string query = @"
-                SELECT h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
-                FROM Kehadiran h
-                INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
+            // Try get from cache first
+            var dt = _cache.Get(CacheKey) as DataTable;
 
-            try
+            if (dt == null)
             {
-                using (var conn = new SqlConnection(connectionString))
-                using (var da = new SqlDataAdapter(query, conn))
+                // Cache miss - load from DB
+                const string query = @"
+                    SELECT h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
+                    FROM Kehadiran h
+                    INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
+
+                try
                 {
-                    var dt = new DataTable();
-                    da.Fill(dt);
+                    using (var conn = new SqlConnection(connectionString))
+                    using (var da = new SqlDataAdapter(query, conn))
+                    {
+                        dt = new DataTable();
+                        da.Fill(dt);
 
-                    dataGridView1.DataSource = dt;
-
-                    if (dataGridView1.Columns.Contains("Waktu_Masuk"))
-                        dataGridView1.Columns["Waktu_Masuk"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                    if (dataGridView1.Columns.Contains("Waktu_Keluar"))
-                        dataGridView1.Columns["Waktu_Keluar"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+                        // Cache for 5 minutes from now
+                        var policy = new CacheItemPolicy
+                        {
+                            AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5)
+                        };
+                        _cache.Set(CacheKey, dt, policy);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error loading attendance data: " + ex.Message);
+                    return;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading attendance data: " + ex.Message);
-            }
+
+            dataGridView1.DataSource = dt;
+
+            if (dataGridView1.Columns.Contains("Waktu_Masuk"))
+                dataGridView1.Columns["Waktu_Masuk"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+
+            if (dataGridView1.Columns.Contains("Waktu_Keluar"))
+                dataGridView1.Columns["Waktu_Keluar"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
         }
 
         private void DeleteAttendanceRecord(int idKehadiran)
@@ -94,6 +114,10 @@ namespace pabdproject
                     if (rowsAffected > 0)
                     {
                         MessageBox.Show("Attendance record deleted successfully.");
+
+                        // Clear cache after delete
+                        _cache.Remove(CacheKey);
+
                         LoadAttendanceData();
                     }
                     else

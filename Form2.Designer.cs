@@ -57,7 +57,7 @@
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.Red;
-            this.button4.Location = new System.Drawing.Point(12, 296);
+            this.button4.Location = new System.Drawing.Point(12, 294);
             this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(165, 42);
@@ -126,9 +126,9 @@
             // Logout
             // 
             this.Logout.BackColor = System.Drawing.Color.Red;
-            this.Logout.Location = new System.Drawing.Point(636, 296);
+            this.Logout.Location = new System.Drawing.Point(211, 12);
             this.Logout.Name = "Logout";
-            this.Logout.Size = new System.Drawing.Size(165, 39);
+            this.Logout.Size = new System.Drawing.Size(165, 42);
             this.Logout.TabIndex = 4;
             this.Logout.Text = "Logout";
             this.Logout.UseVisualStyleBackColor = false;

@@ -33,12 +33,14 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(503, 157);
+            this.radioButton1.Location = new System.Drawing.Point(203, 130);
             this.radioButton1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(76, 24);
@@ -50,7 +52,7 @@
             // 
             // dateTimePicker1
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(416, 108);
+            this.dateTimePicker1.Location = new System.Drawing.Point(116, 81);
             this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(293, 26);
@@ -60,7 +62,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(503, 208);
+            this.radioButton2.Location = new System.Drawing.Point(203, 181);
             this.radioButton2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(114, 24);
@@ -73,10 +75,10 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.Lime;
-            this.button1.Location = new System.Drawing.Point(503, 254);
+            this.button1.Location = new System.Drawing.Point(183, 233);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(112, 30);
+            this.button1.Size = new System.Drawing.Size(134, 51);
             this.button1.TabIndex = 3;
             this.button1.Text = "Konfirmasi";
             this.button1.UseVisualStyleBackColor = false;
@@ -94,23 +96,34 @@
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.DarkTurquoise;
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.radioButton2);
+            this.groupBox1.Controls.Add(this.dateTimePicker1);
+            this.groupBox1.Controls.Add(this.radioButton1);
+            this.groupBox1.Location = new System.Drawing.Point(278, 77);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(521, 335);
+            this.groupBox1.TabIndex = 5;
+            this.groupBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.BackColor = System.Drawing.Color.Salmon;
             this.ClientSize = new System.Drawing.Size(1120, 490);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.radioButton1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.Text = "Form Presensi";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -121,6 +134,7 @@
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

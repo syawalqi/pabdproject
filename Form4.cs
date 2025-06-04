@@ -7,7 +7,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Caching;
 using System.Windows.Forms;
+
 
 namespace pabdproject
 {
@@ -16,6 +18,9 @@ namespace pabdproject
         private readonly string userRole;
         private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private const string CacheKey = "KaryawanData";
+        
         public Form4(string role)
         {
             InitializeComponent();
@@ -32,23 +37,37 @@ namespace pabdproject
 
         private void LoadKaryawanData()
         {
-            string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role FROM Karyawan";
+            // Try to get data from cache first
+            DataTable dt = _cache.Get(CacheKey) as DataTable;
 
-            try
+            if (dt == null)
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
+                // Cache miss: Load from database
+                string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role FROM Karyawan";
+
+                try
                 {
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dataGridView1.DataSource = dt;
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
+                    {
+                        dt = new DataTable();
+                        da.Fill(dt);
+
+                        // Store in cache for 5 minutes
+                        var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
+                        _cache.Set(CacheKey, dt, policy);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                    return;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
+
+            dataGridView1.DataSource = dt;
         }
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -84,7 +103,9 @@ namespace pabdproject
                         if (rowsAffected > 0)
                         {
                             MessageBox.Show("Data karyawan berhasil dihapus.");
+                            _cache.Remove(CacheKey);  // Clear cache
                             LoadKaryawanData();
+                            
                         }
                     }
                 }
@@ -119,6 +140,8 @@ namespace pabdproject
             // Controls
             TextBox txtNama = new TextBox(), txtJabatan = new TextBox(), txtDepartemen = new TextBox(), txtPassword = new TextBox();
             DateTimePicker dtTanggal = new DateTimePicker() { Format = DateTimePickerFormat.Short };
+            dtTanggal.MinDate = DateTime.Today.AddYears(-1);
+            dtTanggal.MaxDate = DateTime.Today.AddYears(1);
             ComboBox cmbRole = new ComboBox();
             cmbRole.Items.AddRange(new string[] { "employee", "admin" });
             cmbRole.SelectedIndex = 0;
@@ -160,7 +183,9 @@ namespace pabdproject
 
                         MessageBox.Show("Karyawan added successfully.");
                         popup.Close();
+                        _cache.Remove(CacheKey);  // Clear cache
                         LoadKaryawanData();
+                        
                     }
                 }
                 catch (Exception ex)
@@ -235,6 +260,7 @@ namespace pabdproject
                         cmd.ExecuteNonQuery();
                         MessageBox.Show("Data berhasil diupdate.");
                         popup.Close();
+                        _cache.Remove(CacheKey);  // Clear cache
                         LoadKaryawanData();
                     }
                 }
