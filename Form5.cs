@@ -29,6 +29,7 @@ namespace pabdproject
 
         private void Form5_Load(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadAttendanceData();
         }
 
@@ -61,10 +62,9 @@ namespace pabdproject
             {
                 // Cache miss - load from DB
                 const string query = @"
-                    SELECT h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
+                    SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
                     FROM Kehadiran h
                     INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
-
                 try
                 {
                     using (var conn = new SqlConnection(connectionString))
@@ -135,6 +135,12 @@ namespace pabdproject
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // Optional: handle clicks if needed
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            _cache.Remove(CacheKey);
+            LoadAttendanceData();
         }
     }
 }

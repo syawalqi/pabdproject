@@ -1,13 +1,16 @@
-﻿using System;
+﻿using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.Caching;
 using System.Windows.Forms;
 
 
@@ -294,6 +297,82 @@ namespace pabdproject
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             // You can implement row-click behavior here if needed
+        }
+
+        private void PreviewData(string filePath)
+        {
+            try
+            {
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    IWorkbook workbook = new XSSFWorkbook(fs); // for .xlsx/.xlsm files only
+                    ISheet sheet = workbook.GetSheetAt(0);
+                    DataTable dt = new DataTable();
+
+                    // Header row
+                    IRow headerRow = sheet.GetRow(0);
+                    if (headerRow == null)
+                    {
+                        MessageBox.Show("Sheet is empty or missing header row.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    foreach (var cell in headerRow.Cells)
+                    {
+                        string colName = cell?.ToString() ?? $"Column{cell.ColumnIndex}";
+                        if (!dt.Columns.Contains(colName))
+                            dt.Columns.Add(colName);
+                        else
+                            dt.Columns.Add(colName + "_" + cell.ColumnIndex);
+                    }
+
+                    // Data rows
+                    for (int i = 1; i <= sheet.LastRowNum; i++)
+                    {
+                        IRow row = sheet.GetRow(i);
+                        if (row == null) continue;
+
+                        DataRow newRow = dt.NewRow();
+
+                        for (int colIndex = 0; colIndex < dt.Columns.Count; colIndex++)
+                        {
+                            ICell cell = row.GetCell(colIndex);
+                            if (cell == null)
+                                newRow[colIndex] = string.Empty;
+                            else
+                                newRow[colIndex] = cell.ToString();
+                        }
+
+                        dt.Rows.Add(newRow);
+                    }
+
+                    // Use PreviewImportForm as requested
+                    PreviewImportForm previewForm = new PreviewImportForm(dt);
+                    previewForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error reading the Excel file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            using (var openFile = new OpenFileDialog())
+            {
+                openFile.Filter = "Excel Files|*.xlsx;*.xlsm";
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    PreviewData(openFile.FileName);  // Call PreviewData here, not PreviewImportForm
+                }
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            _cache.Remove(CacheKey);
+            LoadKaryawanData();
         }
     }
 }
