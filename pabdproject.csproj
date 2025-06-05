@@ -144,6 +144,12 @@
     <Compile Include="Form5.Designer.cs">
       <DependentUpon>Form5.cs</DependentUpon>
     </Compile>
+    <Compile Include="GajiEmployee.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GajiEmployee.Designer.cs">
+      <DependentUpon>GajiEmployee.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviewImportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,6 +172,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form5.resx">
       <DependentUpon>Form5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GajiEmployee.resx">
+      <DependentUpon>GajiEmployee.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreviewImportForm.resx">
       <DependentUpon>PreviewImportForm.cs</DependentUpon>

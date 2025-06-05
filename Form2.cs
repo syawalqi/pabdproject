@@ -31,6 +31,7 @@ namespace pabdproject
                 button2.Visible = false; // Hide "Presensi Check"
                 button3.Visible = false; // Hide "Karyawan List"
                 button4.Visible = false; // Hide admin feature button
+                button4.Text = "Gaji"; // Change button text to "Gaji"
             }
             else if (userRole == "admin")
             {
@@ -38,6 +39,7 @@ namespace pabdproject
                 button2.Visible = true;
                 button3.Visible = true;
                 button4.Visible = true;
+                button4.Visible = true; // Change button text to "Gaji Karyawan"
             }
         }
 
@@ -75,12 +77,6 @@ namespace pabdproject
             var karyawanForm = new Form4(userRole);
             karyawanForm.Show();
             this.Hide();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            // Placeholder for future feature
-            MessageBox.Show("This feature is not yet available.");
         }
 
         private void label4_Click(object sender, EventArgs e)
@@ -122,5 +118,18 @@ namespace pabdproject
             }
         }
 
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            if (userRole == "employee")
+            {
+                MessageBox.Show("This feature is not available for employees.");
+                return;
+            }
+
+            // Navigate to Form5 (Attendance list)
+            var attendanceForm = new GajiEmployee(userRole);
+            attendanceForm.Show();
+            this.Hide();
+        }
     }
 }

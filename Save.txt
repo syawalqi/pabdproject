@@ -1,0 +1,25 @@
+     cmd.CommandText = @"
+ UPDATE Karyawan
+ SET Nama = @Nama, Jabatan = @Jabatan, Departemen = @Departemen
+ WHERE ID_Karyawan = @ID_Karyawan";
+     cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
+     cmd.Parameters.AddWithValue("@Jabatan", jabatan);
+     cmd.Parameters.AddWithValue("@Departemen", departemen);
+     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
+     cmd.ExecuteNonQuery();
+
+     // Update data Gaji (opsional: hanya jika ada 1 entri gaji atau update entri terakhir)
+     cmd.CommandText = @"
+ UPDATE Gaji
+ SET Gaji_Pokok = @Gaji_Pokok, Total_Gaji = @Total_Gaji
+ WHERE ID_Karyawan = @ID_Karyawan";
+     cmd.Parameters.Clear();
+     cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
+     cmd.Parameters.AddWithValue("@Total_Gaji", gajiPokok); // Tambahkan logika tunjangan/potongan jika ada
+     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
+     cmd.ExecuteNonQuery();
+
+     transaction.Commit();
+     lblMessage.Text = "Data berhasil diubah.";
+     LoadJoinedData();
+ }

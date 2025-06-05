@@ -10,10 +10,10 @@ CREATE TABLE Karyawan (
 
 select * from Karyawan
 INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk)
-VALUES ('Budi', 'Staff', 'Manusia', '2024-01-15');
+VALUES ('Admin', 'Staff', 'Manusia', '2024-01-15');
 
 INSERT INTO Karyawan (Nama, Jabatan, Departemen, Tanggal_Masuk, Role)
-VALUES ('Budiss', 'Staff', 'Manusia', '2024-01-15', 'admin');
+VALUES ('Admin', 'Staff', 'Manusia', '2024-01-15', 'admin');
 
 
 ALTER TABLE Karyawan
@@ -193,3 +193,77 @@ BEGIN
     INSERT INTO Kehadiran (ID_Karyawan, Tanggal, Status, Waktu_Masuk)
     VALUES (@ID_Karyawan, @Tanggal, @Status, @Waktu_Masuk);
 END;
+----------------------------------------------------------------------------------
+----indexes
+
+
+-- Indexes for Karyawan
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Karyawan_Nama' AND object_id = OBJECT_ID('dbo.Karyawan')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Karyawan_Nama ON dbo.Karyawan(Nama);
+    PRINT 'Created idx_Karyawan_Nama';
+END
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Karyawan_Departemen' AND object_id = OBJECT_ID('dbo.Karyawan')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Karyawan_Departemen ON dbo.Karyawan(Departemen);
+    PRINT 'Created idx_Karyawan_Departemen';
+END
+
+-- Indexes for Kehadiran
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Kehadiran_IDKaryawan_Tanggal' AND object_id = OBJECT_ID('dbo.Kehadiran')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Kehadiran_IDKaryawan_Tanggal
+    ON dbo.Kehadiran(ID_Karyawan, Tanggal);
+    PRINT 'Created idx_Kehadiran_IDKaryawan_Tanggal';
+END
+
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Kehadiran_Status' AND object_id = OBJECT_ID('dbo.Kehadiran')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Kehadiran_Status ON dbo.Kehadiran(Status);
+    PRINT 'Created idx_Kehadiran_Status';
+END
+
+-- Index for Cuti (for faster lookup in trigger/join)
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Cuti_IDKaryawan_Tanggal' AND object_id = OBJECT_ID('dbo.Cuti')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Cuti_IDKaryawan_Tanggal
+    ON dbo.Cuti(ID_Karyawan, Tanggal_Mulai, Tanggal_Selesai);
+    PRINT 'Created idx_Cuti_IDKaryawan_Tanggal';
+END
+
+-- Index for Shifts (lookup by karyawan and day)
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Shifts_IDKaryawan_HariKerja' AND object_id = OBJECT_ID('dbo.Shifts')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Shifts_IDKaryawan_HariKerja
+    ON dbo.Shifts(ID_Karyawan, Hari_Kerja);
+    PRINT 'Created idx_Shifts_IDKaryawan_HariKerja';
+END
+
+-- Index for Gaji (frequent lookups by ID_Karyawan)
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'idx_Gaji_IDKaryawan' AND object_id = OBJECT_ID('dbo.Gaji')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Gaji_IDKaryawan ON dbo.Gaji(ID_Karyawan);
+    PRINT 'Created idx_Gaji_IDKaryawan';
+END
