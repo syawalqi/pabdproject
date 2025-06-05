@@ -31,7 +31,6 @@
             this.dataGajiKaryawan = new System.Windows.Forms.DataGridView();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnDelete = new System.Windows.Forms.Button();
             this.txtNamaKaryawan = new System.Windows.Forms.TextBox();
             this.txtGajiKaryawan = new System.Windows.Forms.TextBox();
             this.lblNamaKaryawan = new System.Windows.Forms.Label();
@@ -41,6 +40,7 @@
             this.lblMessage = new System.Windows.Forms.Label();
             this.txtDepartemen = new System.Windows.Forms.TextBox();
             this.lblDepartemen = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGajiKaryawan)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,7 +58,7 @@
             // btnUpdate
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.MenuHighlight;
-            this.btnUpdate.Location = new System.Drawing.Point(190, 321);
+            this.btnUpdate.Location = new System.Drawing.Point(325, 364);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(155, 48);
             this.btnUpdate.TabIndex = 2;
@@ -68,24 +68,13 @@
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(45, 431);
+            this.btnRefresh.Location = new System.Drawing.Point(53, 364);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(155, 48);
             this.btnRefresh.TabIndex = 3;
             this.btnRefresh.Text = "REFRESH";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
-            // btnDelete
-            // 
-            this.btnDelete.BackColor = System.Drawing.Color.Crimson;
-            this.btnDelete.Location = new System.Drawing.Point(350, 431);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(155, 48);
-            this.btnDelete.TabIndex = 4;
-            this.btnDelete.Text = "DELETE";
-            this.btnDelete.UseVisualStyleBackColor = false;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // txtNamaKaryawan
             // 
@@ -160,11 +149,23 @@
             this.lblDepartemen.TabIndex = 14;
             this.lblDepartemen.Text = "Departemen";
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.SpringGreen;
+            this.button1.Location = new System.Drawing.Point(190, 455);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(155, 48);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "KEMBALI";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // GajiEmployee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1355, 640);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblDepartemen);
             this.Controls.Add(this.txtDepartemen);
             this.Controls.Add(this.lblMessage);
@@ -174,7 +175,6 @@
             this.Controls.Add(this.lblNamaKaryawan);
             this.Controls.Add(this.txtGajiKaryawan);
             this.Controls.Add(this.txtNamaKaryawan);
-            this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.dataGajiKaryawan);
@@ -192,7 +192,6 @@
         private System.Windows.Forms.DataGridView dataGajiKaryawan;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.TextBox txtNamaKaryawan;
         private System.Windows.Forms.TextBox txtGajiKaryawan;
         private System.Windows.Forms.Label lblNamaKaryawan;
@@ -202,5 +201,6 @@
         private System.Windows.Forms.Label lblMessage;
         private System.Windows.Forms.TextBox txtDepartemen;
         private System.Windows.Forms.Label lblDepartemen;
+        private System.Windows.Forms.Button button1;
     }
 }

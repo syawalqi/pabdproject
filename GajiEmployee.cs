@@ -306,5 +306,12 @@ namespace pabdproject
         {
             LoadJoinedData(); // Refresh after deletion
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2(userRole);
+            form2.Show();
+            this.Hide();
+        }
     }
 }
