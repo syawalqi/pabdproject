@@ -14,6 +14,7 @@ namespace pabdproject
 {
     public partial class exportreport: Form
     {
+        private readonly string userRole;
         public exportreport()
         {
             InitializeComponent();
@@ -30,7 +31,7 @@ namespace pabdproject
 
         private void SetupReportViewer()
         {
-            string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
             // SQL query to retrieve the required data from the database
             string query = @"
@@ -57,11 +58,18 @@ namespace pabdproject
 
             // Set the path to the report (.rdlc file)
             // Change this to the actual path of your RDLC file
-            reportViewer1.LocalReport.ReportPath = @"C:\UMY-Teknologi Informasi\Semester 4 TI\Pengembangan Aplikasi Basis Data\projekpabd\laporanattendance.rdlc";
+            reportViewer1.LocalReport.ReportPath = @"D:\TugasKampus\SEM4\PABD\pabdproject\laporanattendance.rdlc";
 
 
             // Refresh the ReportViewer to show the updated report
             reportViewer1.RefreshReport();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Form5 form5 = new Form5(userRole);
+            form5.Show();
+            this.Hide();
         }
     }
 }

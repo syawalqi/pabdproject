@@ -14,8 +14,8 @@ namespace pabdproject
 {
     public partial class PreviewImportForm : Form
     {
-
-        private string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+        private readonly string userRole;
+        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
         public PreviewImportForm(DataTable data)
         {
@@ -116,6 +116,13 @@ namespace pabdproject
             {
                 ImportDataToDatabase();
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form4 form4 = new Form4(userRole);
+            form4.Show();
+            this.Close();
         }
     }
 }

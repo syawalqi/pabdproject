@@ -16,7 +16,7 @@ namespace pabdproject
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new exportreport());
+            Application.Run(new Form3());
         }
     }
 }

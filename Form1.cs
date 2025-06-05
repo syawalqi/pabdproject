@@ -84,7 +84,7 @@ namespace pabdproject
             }
 
             // Connection string for SQL Server
-            string connectionString = "NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
+            string connectionString = "LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
 
             try
             {
