@@ -51,6 +51,9 @@
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.IO.RecyclableMemoryStream.3.0.0\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ReportViewer.WinForms.v12.12.0.0.1\lib\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="NPOI.Core, Version=2.7.3.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>packages\NPOI.2.7.3\lib\net472\NPOI.Core.dll</HintPath>
     </Reference>
@@ -114,6 +117,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="exportreport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="exportreport.Designer.cs">
+      <DependentUpon>exportreport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -150,6 +159,11 @@
     <Compile Include="GajiEmployee.Designer.cs">
       <DependentUpon>GajiEmployee.cs</DependentUpon>
     </Compile>
+    <Compile Include="presensikaryawan.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>presensikaryawan.xsd</DependentUpon>
+    </Compile>
     <Compile Include="PreviewImportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -158,6 +172,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="exportreport.resx">
+      <DependentUpon>exportreport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -176,6 +193,7 @@
     <EmbeddedResource Include="GajiEmployee.resx">
       <DependentUpon>GajiEmployee.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="laporanattendance.rdlc" />
     <EmbeddedResource Include="PreviewImportForm.resx">
       <DependentUpon>PreviewImportForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -189,6 +207,17 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="packages.config" />
+    <None Include="presensikaryawan.xsc">
+      <DependentUpon>presensikaryawan.xsd</DependentUpon>
+    </None>
+    <None Include="presensikaryawan.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>presensikaryawan.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="presensikaryawan.xss">
+      <DependentUpon>presensikaryawan.xsd</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

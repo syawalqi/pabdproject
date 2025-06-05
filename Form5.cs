@@ -15,7 +15,7 @@ namespace pabdproject
     public partial class Form5 : Form
     {
         private readonly string userRole;
-        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+        private readonly string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
 
         // Cache instance and key
         private readonly MemoryCache _cache = MemoryCache.Default;

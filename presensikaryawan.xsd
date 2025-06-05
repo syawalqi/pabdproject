@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="presensikaryawan" targetNamespace="http://tempuri.org/presensikaryawan.xsd" xmlns:mstns="http://tempuri.org/presensikaryawan.xsd" xmlns="http://tempuri.org/presensikaryawan.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Settings" AppSettingsPropertyName="MANDAKConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="MANDAKConnectionString (Settings)" ParameterPrefix="@" PropertyReference="ApplicationSettings.pabdproject.Properties.Settings.GlobalReference.Default.MANDAKConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="KehadiranTableAdapter" GeneratorDataComponentClassName="KehadiranTableAdapter" Name="Kehadiran" UserDataComponentName="KehadiranTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="MANDAKConnectionString (Settings)" DbObjectType="Unknown" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="true" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="true">
+                    <CommandText>SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
+FROM     Kehadiran AS h INNER JOIN
+                  Karyawan AS k ON h.ID_Karyawan = k.ID_Karyawan</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="ID_Kehadiran" DataSetColumn="ID_Kehadiran" />
+              <Mapping SourceColumn="ID_Karyawan" DataSetColumn="ID_Karyawan" />
+              <Mapping SourceColumn="Waktu_Masuk" DataSetColumn="Waktu_Masuk" />
+              <Mapping SourceColumn="Waktu_Keluar" DataSetColumn="Waktu_Keluar" />
+              <Mapping SourceColumn="Status" DataSetColumn="Status" />
+              <Mapping SourceColumn="Nama" DataSetColumn="Nama" />
+              <Mapping SourceColumn="Jabatan" DataSetColumn="Jabatan" />
+              <Mapping SourceColumn="Departemen" DataSetColumn="Departemen" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="presensikaryawan" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="presensikaryawan" msprop:Generator_DataSetName="presensikaryawan">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Kehadiran" msprop:Generator_RowEvHandlerName="KehadiranRowChangeEventHandler" msprop:Generator_RowDeletedName="KehadiranRowDeleted" msprop:Generator_RowDeletingName="KehadiranRowDeleting" msprop:Generator_RowEvArgName="KehadiranRowChangeEvent" msprop:Generator_TablePropName="Kehadiran" msprop:Generator_RowChangedName="KehadiranRowChanged" msprop:Generator_RowChangingName="KehadiranRowChanging" msprop:Generator_TableClassName="KehadiranDataTable" msprop:Generator_RowClassName="KehadiranRow" msprop:Generator_TableVarName="tableKehadiran" msprop:Generator_UserTableName="Kehadiran">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ID_Kehadiran" msdata:ReadOnly="true" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_ColumnPropNameInRow="ID_Kehadiran" msprop:Generator_ColumnPropNameInTable="ID_KehadiranColumn" msprop:Generator_ColumnVarNameInTable="columnID_Kehadiran" msprop:Generator_UserColumnName="ID_Kehadiran" type="xs:int" />
+              <xs:element name="ID_Karyawan" msprop:Generator_ColumnPropNameInRow="ID_Karyawan" msprop:Generator_ColumnPropNameInTable="ID_KaryawanColumn" msprop:Generator_ColumnVarNameInTable="columnID_Karyawan" msprop:Generator_UserColumnName="ID_Karyawan" type="xs:int" />
+              <xs:element name="Waktu_Masuk" msprop:Generator_ColumnPropNameInRow="Waktu_Masuk" msprop:Generator_ColumnPropNameInTable="Waktu_MasukColumn" msprop:Generator_ColumnVarNameInTable="columnWaktu_Masuk" msprop:Generator_UserColumnName="Waktu_Masuk" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Waktu_Keluar" msprop:Generator_ColumnPropNameInRow="Waktu_Keluar" msprop:Generator_ColumnPropNameInTable="Waktu_KeluarColumn" msprop:Generator_ColumnVarNameInTable="columnWaktu_Keluar" msprop:Generator_UserColumnName="Waktu_Keluar" type="xs:dateTime" minOccurs="0" />
+              <xs:element name="Status" msprop:Generator_ColumnPropNameInRow="Status" msprop:Generator_ColumnPropNameInTable="StatusColumn" msprop:Generator_ColumnVarNameInTable="columnStatus" msprop:Generator_UserColumnName="Status">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Nama" msprop:Generator_ColumnPropNameInRow="Nama" msprop:Generator_ColumnPropNameInTable="NamaColumn" msprop:Generator_ColumnVarNameInTable="columnNama" msprop:Generator_UserColumnName="Nama">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Jabatan" msprop:Generator_ColumnPropNameInRow="Jabatan" msprop:Generator_ColumnPropNameInTable="JabatanColumn" msprop:Generator_ColumnVarNameInTable="columnJabatan" msprop:Generator_UserColumnName="Jabatan">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Departemen" msprop:Generator_ColumnPropNameInRow="Departemen" msprop:Generator_ColumnPropNameInTable="DepartemenColumn" msprop:Generator_ColumnVarNameInTable="columnDepartemen" msprop:Generator_UserColumnName="Departemen">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:Kehadiran" />
+      <xs:field xpath="mstns:ID_Kehadiran" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

@@ -15,7 +15,7 @@ namespace pabdproject
     public partial class PreviewImportForm : Form
     {
 
-        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+        private string connectionString = "Data Source=NITROSFAQIH\\SQLEXPRESS;Initial Catalog=MANDAK;Integrated Security=True";
 
         public PreviewImportForm(DataTable data)
         {
