@@ -31,7 +31,7 @@ namespace pabdproject
 
         private void SetupReportViewer()
         {
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+            string connectionString = "Data Source=BILLAAA\\SA;Initial Catalog=MANDAK;Integrated Security=True";
 
             // SQL query to retrieve the required data from the database
             string query = @"
@@ -58,7 +58,7 @@ namespace pabdproject
 
             // Set the path to the report (.rdlc file)
             // Change this to the actual path of your RDLC file
-            reportViewer1.LocalReport.ReportPath = @"D:\TugasKampus\SEM4\PABD\pabdproject\laporanattendance.rdlc";
+            reportViewer1.LocalReport.ReportPath = @"D:\Semester 4\PABD\ProjectPABD\pabdproject\laporanattendance.rdlc";
 
 
             // Refresh the ReportViewer to show the updated report

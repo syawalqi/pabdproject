@@ -41,7 +41,7 @@
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.button2);
@@ -51,16 +51,16 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(194, 450);
+            this.panel1.Size = new System.Drawing.Size(172, 360);
             this.panel1.TabIndex = 0;
             // 
             // button4
             // 
-            this.button4.BackColor = System.Drawing.Color.Cyan;
-            this.button4.Location = new System.Drawing.Point(12, 294);
+            this.button4.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.button4.Location = new System.Drawing.Point(11, 235);
             this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(165, 42);
+            this.button4.Size = new System.Drawing.Size(147, 34);
             this.button4.TabIndex = 3;
             this.button4.Text = "Gaji Karyawan";
             this.button4.UseVisualStyleBackColor = false;
@@ -68,11 +68,11 @@
             // 
             // button3
             // 
-            this.button3.BackColor = System.Drawing.Color.Cyan;
-            this.button3.Location = new System.Drawing.Point(12, 248);
+            this.button3.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.button3.Location = new System.Drawing.Point(11, 198);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(165, 42);
+            this.button3.Size = new System.Drawing.Size(147, 34);
             this.button3.TabIndex = 2;
             this.button3.Text = "Daftar Karyawan";
             this.button3.UseVisualStyleBackColor = false;
@@ -80,11 +80,11 @@
             // 
             // button2
             // 
-            this.button2.BackColor = System.Drawing.Color.Cyan;
-            this.button2.Location = new System.Drawing.Point(12, 200);
+            this.button2.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.button2.Location = new System.Drawing.Point(11, 160);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(165, 42);
+            this.button2.Size = new System.Drawing.Size(147, 34);
             this.button2.TabIndex = 1;
             this.button2.Text = "Check Presensi";
             this.button2.UseVisualStyleBackColor = false;
@@ -92,11 +92,11 @@
             // 
             // button1
             // 
-            this.button1.BackColor = System.Drawing.Color.PaleGreen;
-            this.button1.Location = new System.Drawing.Point(12, 78);
+            this.button1.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.button1.Location = new System.Drawing.Point(11, 62);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(165, 39);
+            this.button1.Size = new System.Drawing.Size(147, 31);
             this.button1.TabIndex = 1;
             this.button1.Text = "Presensi";
             this.button1.UseVisualStyleBackColor = false;
@@ -105,31 +105,34 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(45, 25);
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(40, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(105, 32);
+            this.label1.Size = new System.Drawing.Size(91, 29);
             this.label1.TabIndex = 1;
             this.label1.Text = "HOME ";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(406, 78);
+            this.label4.Location = new System.Drawing.Point(361, 62);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 55);
+            this.label4.Size = new System.Drawing.Size(31, 46);
             this.label4.TabIndex = 3;
             this.label4.Text = ".";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // Logout
             // 
-            this.Logout.BackColor = System.Drawing.Color.Red;
-            this.Logout.Location = new System.Drawing.Point(211, 12);
+            this.Logout.BackColor = System.Drawing.Color.LightCoral;
+            this.Logout.Location = new System.Drawing.Point(188, 10);
+            this.Logout.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Logout.Name = "Logout";
-            this.Logout.Size = new System.Drawing.Size(165, 42);
+            this.Logout.Size = new System.Drawing.Size(147, 34);
             this.Logout.TabIndex = 4;
             this.Logout.Text = "Logout";
             this.Logout.UseVisualStyleBackColor = false;
@@ -137,10 +140,10 @@
             // 
             // Form2
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1258, 450);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(191)))), ((int)(((byte)(186)))));
+            this.ClientSize = new System.Drawing.Size(1118, 360);
             this.Controls.Add(this.Logout);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.panel1);

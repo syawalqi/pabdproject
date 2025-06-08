@@ -34,18 +34,18 @@
             // 
             // reportViewer1
             // 
-            this.reportViewer1.Location = new System.Drawing.Point(51, 37);
-            this.reportViewer1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.reportViewer1.Location = new System.Drawing.Point(45, 30);
             this.reportViewer1.Name = "reportViewer1";
-            this.reportViewer1.Size = new System.Drawing.Size(1136, 452);
+            this.reportViewer1.Size = new System.Drawing.Size(1010, 362);
             this.reportViewer1.TabIndex = 0;
             // 
             // button1
             // 
-            this.button1.BackColor = System.Drawing.Color.GreenYellow;
-            this.button1.Location = new System.Drawing.Point(51, 516);
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
+            this.button1.Location = new System.Drawing.Point(45, 413);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(166, 34);
+            this.button1.Size = new System.Drawing.Size(148, 27);
             this.button1.TabIndex = 1;
             this.button1.Text = "<--- Kembali";
             this.button1.UseVisualStyleBackColor = false;
@@ -53,12 +53,12 @@
             // 
             // exportreport
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1251, 562);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(191)))), ((int)(((byte)(186)))));
+            this.ClientSize = new System.Drawing.Size(1112, 450);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.reportViewer1);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "exportreport";
             this.Text = "exportreport";
             this.Load += new System.EventHandler(this.exportreport_Load);
