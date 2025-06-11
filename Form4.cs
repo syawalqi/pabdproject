@@ -142,9 +142,16 @@ namespace pabdproject
 
             // Controls
             TextBox txtNama = new TextBox(), txtJabatan = new TextBox(), txtDepartemen = new TextBox(), txtPassword = new TextBox();
+
+            // Tambahkan validasi huruf
+            txtNama.KeyPress += OnlyLetters_KeyPress;
+            txtJabatan.KeyPress += OnlyLetters_KeyPress;
+            txtDepartemen.KeyPress += OnlyLetters_KeyPress;
+
             DateTimePicker dtTanggal = new DateTimePicker() { Format = DateTimePickerFormat.Short };
             dtTanggal.MinDate = DateTime.Today.AddYears(-1);
             dtTanggal.MaxDate = DateTime.Today.AddYears(1);
+
             ComboBox cmbRole = new ComboBox();
             cmbRole.Items.AddRange(new string[] { "employee", "admin" });
             cmbRole.SelectedIndex = 0;
@@ -161,7 +168,7 @@ namespace pabdproject
                     return;
                 }
 
-                // Password length check: minimum 8 characters
+                // Password minimum 8 karakter
                 if (txtPassword.Text.Trim().Length < 8)
                 {
                     MessageBox.Show("Password must be at least 8 characters long.");
@@ -188,7 +195,6 @@ namespace pabdproject
                         popup.Close();
                         _cache.Remove(CacheKey);  // Clear cache
                         LoadKaryawanData();
-                        
                     }
                 }
                 catch (Exception ex)
@@ -209,6 +215,17 @@ namespace pabdproject
 
             popup.ShowDialog();
         }
+
+        // Fungsi hanya huruf dan spasi
+        private void OnlyLetters_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar) && !char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -235,12 +252,26 @@ namespace pabdproject
             TextBox txtNama = new TextBox() { Text = row.Cells["Nama"].Value.ToString() };
             TextBox txtJabatan = new TextBox() { Text = row.Cells["Jabatan"].Value.ToString() };
             TextBox txtDepartemen = new TextBox() { Text = row.Cells["Departemen"].Value.ToString() };
-            DateTimePicker dtTanggal = new DateTimePicker() { Format = DateTimePickerFormat.Short, Value = Convert.ToDateTime(row.Cells["Tanggal_Masuk"].Value) };
+
+            // Validasi hanya huruf dan spasi
+            txtNama.KeyPress += OnlyLetters_KeyPress;
+            txtJabatan.KeyPress += OnlyLetters_KeyPress;
+            txtDepartemen.KeyPress += OnlyLetters_KeyPress;
+
+            DateTimePicker dtTanggal = new DateTimePicker()
+            {
+                Format = DateTimePickerFormat.Short,
+                Value = Convert.ToDateTime(row.Cells["Tanggal_Masuk"].Value),
+                MinDate = DateTime.Today.AddYears(-1),
+                MaxDate = DateTime.Today.AddYears(1)
+            };
 
             Button btnUpdate = new Button() { Text = "Update" };
             btnUpdate.Click += (s, ev) =>
             {
-                if (string.IsNullOrWhiteSpace(txtNama.Text) || string.IsNullOrWhiteSpace(txtJabatan.Text) || string.IsNullOrWhiteSpace(txtDepartemen.Text))
+                if (string.IsNullOrWhiteSpace(txtNama.Text) ||
+                    string.IsNullOrWhiteSpace(txtJabatan.Text) ||
+                    string.IsNullOrWhiteSpace(txtDepartemen.Text))
                 {
                     MessageBox.Show("Semua field harus diisi!");
                     return;
@@ -263,7 +294,7 @@ namespace pabdproject
                         cmd.ExecuteNonQuery();
                         MessageBox.Show("Data berhasil diupdate.");
                         popup.Close();
-                        _cache.Remove(CacheKey);  // Clear cache
+                        _cache.Remove(CacheKey);
                         LoadKaryawanData();
                     }
                 }
@@ -283,6 +314,9 @@ namespace pabdproject
 
             popup.ShowDialog();
         }
+
+        // Fungsi validasi hanya huruf dan spasi
+
 
         private void AddFormRow(Form form, string labelText, Control inputControl, int top)
         {

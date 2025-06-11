@@ -42,6 +42,10 @@ namespace pabdproject
                 radioButton2.Enabled = true;
                 // Further customization for admins...
             }
+            // Batasi tanggal maksimal dan minimal
+            dateTimePicker1.MinDate = DateTime.Today.AddYears(-1);
+            dateTimePicker1.MaxDate = DateTime.Today.AddYears(1);
+            dateTimePicker1.Format = DateTimePickerFormat.Short;
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
