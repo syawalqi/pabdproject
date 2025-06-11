@@ -18,7 +18,7 @@ namespace pabdproject
     public partial class Form4 : Form
     {
         private readonly string userRole;
-        private readonly string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
 
         private readonly MemoryCache _cache = MemoryCache.Default;
         private const string CacheKey = "KaryawanData";
