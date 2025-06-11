@@ -34,7 +34,7 @@ namespace pabdproject
 
                 // Tampilkan tombol Cuti untuk karyawan
                 // Asumsikan Anda telah menambahkan tombol dengan nama 'btnCuti' di designer
-                bttnCuti.Visible = true;
+                bttnCuti.Visible = false;
                 bttnCuti.Text = "Ajukan/Lihat Cuti";
             }
             else if (userRole == "admin" || userRole == "hrd") // Pastikan 'hrd' ada di sini
@@ -45,7 +45,7 @@ namespace pabdproject
                 button4.Visible = true;
 
                 // Tampilkan tombol Cuti untuk admin/hrd
-                bttnCuti.Visible = true;
+                bttnCuti.Visible = false;
                 bttnCuti.Text = "Kelola Cuti";
             }
             else

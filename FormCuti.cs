@@ -10,7 +10,7 @@ namespace pabdproject
     {
         // Connection string should ideally be loaded from a configuration file (e.g., App.config)
         // for better security and maintainability, but for this example, we'll keep it here.
-        private string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
         private int loggedInKaryawanID;
         private string userRole;
 
