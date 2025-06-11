@@ -1,4 +1,4 @@
-CREATE DATABASE MANDAK;
+PnajnCREATE DATABASE MANDAK;
 
 CREATE TABLE Karyawan (
     ID_Karyawan INT IDENTITY(1,1) PRIMARY KEY,
@@ -38,15 +38,23 @@ ALTER TABLE Kehadiran
 ALTER TABLE Kehadiran
     ALTER COLUMN Waktu_Keluar DATETIME2 NULL;
 
-
 CREATE TABLE Cuti (
     ID_Cuti INT IDENTITY(1,1) PRIMARY KEY,
     ID_Karyawan INT NOT NULL,
+    Tanggal_Pengajuan DATETIME DEFAULT GETDATE(),
     Tanggal_Mulai DATE NOT NULL,
     Tanggal_Selesai DATE NOT NULL,
-    CONSTRAINT CK_Tanggal_Cuti CHECK (Tanggal_Selesai >= Tanggal_Mulai),
-    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan) ON DELETE CASCADE
+    Jenis_Cuti VARCHAR(50) NOT NULL, -- Contoh: Tahunan, Sakit, Melahirkan, Menikah, dll.
+    Keterangan_Cuti NVARCHAR(500) NULL, -- Alasan pengajuan cuti dari karyawan
+    Status_Persetujuan VARCHAR(20) DEFAULT 'Menunggu' CHECK (Status_Persetujuan IN ('Menunggu', 'Disetujui', 'Ditolak')),
+    ID_Approver INT NULL, -- Karyawan yang menyetujui/menolak (ID_Karyawan dari Karyawan yang ber-role admin/hrd)
+    Tanggal_Approval DATETIME NULL,
+    Keterangan_Approval NVARCHAR(500) NULL, -- Alasan persetujuan/penolakan dari admin/HRD
+    FOREIGN KEY (ID_Karyawan) REFERENCES Karyawan(ID_Karyawan),
+    FOREIGN KEY (ID_Approver) REFERENCES Karyawan(ID_Karyawan)
 );
+
+
 select * from Cuti
 
 
@@ -267,3 +275,182 @@ BEGIN
     CREATE NONCLUSTERED INDEX idx_Gaji_IDKaryawan ON dbo.Gaji(ID_Karyawan);
     PRINT 'Created idx_Gaji_IDKaryawan';
 END
+
+-- Indeks untuk query optimization
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Cuti_Status_Tanggal' AND object_id = OBJECT_ID('dbo.Cuti'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Cuti_Status_Tanggal ON dbo.Cuti(Status_Persetujuan, Tanggal_Pengajuan DESC);
+    PRINT 'Created idx_Cuti_Status_Tanggal';
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Cuti_Karyawan_Periode' AND object_id = OBJECT_ID('dbo.Cuti'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Cuti_Karyawan_Periode ON dbo.Cuti(ID_Karyawan, Tanggal_Mulai, Tanggal_Selesai);
+    PRINT 'Created idx_Cuti_Karyawan_Periode';
+END
+
+-- Indeks tambahan untuk performa laporan dan filter
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Cuti_TanggalMulai_Status' AND object_id = OBJECT_ID('dbo.Cuti'))
+BEGIN
+    CREATE NONCLUSTERED INDEX idx_Cuti_TanggalMulai_Status ON dbo.Cuti(Tanggal_Mulai, Status_Persetujuan);
+    PRINT 'Created idx_Cuti_TanggalMulai_Status';
+END
+
+
+
+
+
+CREATE PROCEDURE AjukanCuti
+    @ID_Karyawan INT,
+    @Jenis_Cuti VARCHAR(50),
+    @Tanggal_Mulai DATE,
+    @Tanggal_Selesai DATE,
+    @Keterangan_Cuti VARCHAR(500)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Rollback otomatis jika ada error
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Validasi: Pastikan Tanggal_Mulai setidaknya 5 hari setelah tanggal pengajuan
+        IF DATEDIFF(day, GETDATE(), @Tanggal_Mulai) < 5
+        BEGIN
+            RAISERROR('Tanggal mulai cuti harus setidaknya 5 hari setelah tanggal pengajuan.', 16, 1);
+        END
+
+        -- Validasi: Tanggal_Mulai tidak boleh lebih besar dari Tanggal_Selesai
+        IF @Tanggal_Mulai > @Tanggal_Selesai
+        BEGIN
+            RAISERROR('Tanggal mulai cuti tidak boleh lebih dari tanggal selesai cuti.', 16, 1);
+        END
+
+        -- Validasi: Cek tumpang tindih cuti untuk karyawan yang sama
+        IF EXISTS (
+            SELECT 1 FROM Cuti
+            WHERE ID_Karyawan = @ID_Karyawan
+            AND (
+                (@Tanggal_Mulai BETWEEN Tanggal_Mulai AND Tanggal_Selesai) OR
+                (@Tanggal_Selesai BETWEEN Tanggal_Mulai AND Tanggal_Selesai) OR
+                (Tanggal_Mulai BETWEEN @Tanggal_Mulai AND @Tanggal_Selesai)
+            )
+            AND Status_Persetujuan IN ('Menunggu', 'Disetujui') -- Cek hanya cuti yang aktif
+        )
+        BEGIN
+            RAISERROR('Anda sudah memiliki pengajuan cuti yang tumpang tindih pada periode tersebut.', 16, 1);
+        END
+
+        INSERT INTO Cuti (ID_Karyawan, Jenis_Cuti, Tanggal_Mulai, Tanggal_Selesai, Keterangan_Cuti , Status_Persetujuan, Tanggal_Pengajuan)
+        VALUES (@ID_Karyawan, @Jenis_Cuti, @Tanggal_Mulai, @Tanggal_Selesai, @Keterangan_Cuti , 'Menunggu', GETDATE());
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(MAX) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
+END;
+
+
+
+
+CREATE PROCEDURE BatalkanCuti
+    @ID_Cuti INT,
+    @ID_Karyawan INT -- ID Karyawan yang mengajukan cuti
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Validasi: Pastikan cuti ada dan milik karyawan yang bersangkutan
+        IF NOT EXISTS (SELECT 1 FROM Cuti WHERE ID_Cuti = @ID_Cuti AND ID_Karyawan = @ID_Karyawan)
+        BEGIN
+            RAISERROR('Pengajuan cuti tidak ditemukan atau Anda tidak memiliki izin untuk membatalkannya.', 16, 1);
+        END
+
+        -- Validasi: Hanya cuti dengan status 'Menunggu' yang bisa dibatalkan oleh karyawan
+        IF EXISTS (SELECT 1 FROM Cuti WHERE ID_Cuti = @ID_Cuti AND Status_Persetujuan <> 'Menunggu')
+        BEGIN
+            RAISERROR('Pengajuan cuti ini sudah diproses dan tidak dapat dibatalkan.', 16, 1);
+        END
+
+        -- Ubah status menjadi 'Dibatalkan_Karyawan'
+        UPDATE Cuti
+        SET
+            Status_Persetujuan = 'Dibatalkan_Karyawan',
+            Keterangan_Approval = 'Dibatalkan oleh karyawan yang mengajukan.',
+            Tanggal_Approval = GETDATE(),
+            ID_Approver = @ID_Karyawan -- ID karyawan yang membatalkan dirinya sendiri
+        WHERE ID_Cuti = @ID_Cuti;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(MAX) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
+END;
+
+
+-- Stored Procedure: UpdateStatusCuti
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'UpdateStatusCuti')
+DROP PROCEDURE UpdateStatusCuti;
+
+
+CREATE PROCEDURE UpdateStatusCuti
+    @ID_Cuti INT,
+    @NewStatus VARCHAR(20),
+    @Keterangan_Approval VARCHAR(MAX) = NULL,
+    @ID_Approver INT -- ID admin/HRD yang melakukan approval
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Validasi: Pastikan ID_Cuti ada
+        IF NOT EXISTS (SELECT 1 FROM Cuti WHERE ID_Cuti = @ID_Cuti)
+        BEGIN
+            RAISERROR('Pengajuan cuti tidak ditemukan.', 16, 1);
+        END
+
+        -- Validasi: Status baru harus valid
+        IF @NewStatus NOT IN ('Menunggu', 'Disetujui', 'Ditolak')
+        BEGIN
+            RAISERROR('Status persetujuan tidak valid. Pilih antara "Menunggu", "Disetujui", atau "Ditolak".', 16, 1);
+        END
+
+        UPDATE Cuti
+        SET
+            Status_Persetujuan = @NewStatus,
+            Keterangan_Approval = @Keterangan_Approval,
+            Tanggal_Approval = GETDATE(),
+            ID_Approver = @ID_Approver
+        WHERE ID_Cuti = @ID_Cuti;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrorMessage NVARCHAR(MAX) = ERROR_MESSAGE();
+        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
+        DECLARE @ErrorState INT = ERROR_STATE();
+        RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
+END;
+

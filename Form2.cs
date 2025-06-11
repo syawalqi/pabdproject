@@ -30,16 +30,28 @@ namespace pabdproject
             {
                 button2.Visible = false; // Hide "Presensi Check"
                 button3.Visible = false; // Hide "Karyawan List"
-                button4.Visible = false; // Hide admin feature button
-                button4.Text = "Gaji"; // Change button text to "Gaji"
+                button4.Visible = false; // Hide admin feature button (Gaji Employee)
+
+                // Tampilkan tombol Cuti untuk karyawan
+                // Asumsikan Anda telah menambahkan tombol dengan nama 'btnCuti' di designer
+                bttnCuti.Visible = true;
+                bttnCuti.Text = "Ajukan/Lihat Cuti";
             }
-            else if (userRole == "admin")
+            else if (userRole == "admin" || userRole == "hrd") // Pastikan 'hrd' ada di sini
             {
                 // Show admin-specific features
                 button2.Visible = true;
                 button3.Visible = true;
                 button4.Visible = true;
-                button4.Visible = true; // Change button text to "Gaji Karyawan"
+
+                // Tampilkan tombol Cuti untuk admin/hrd
+                bttnCuti.Visible = true;
+                bttnCuti.Text = "Kelola Cuti";
+            }
+            else
+            {
+                // Jika ada peran lain yang tidak terdefinisi
+                bttnCuti.Visible = false; // Sembunyikan tombol cuti
             }
         }
 
@@ -135,6 +147,14 @@ namespace pabdproject
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void bttnCuti_Click(object sender, EventArgs e)
+        {
+            // Pastikan FormCutiPengajuan menerima role
+            FormCutiPengajuan formCuti = new FormCutiPengajuan(userRole);
+            formCuti.Show();
+            this.Hide();
         }
     }
 }

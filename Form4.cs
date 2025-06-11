@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace pabdproject
 {
     public partial class Form4 : Form
@@ -23,7 +22,7 @@ namespace pabdproject
 
         private readonly MemoryCache _cache = MemoryCache.Default;
         private const string CacheKey = "KaryawanData";
-        
+
         public Form4(string role)
         {
             InitializeComponent();
@@ -33,19 +32,18 @@ namespace pabdproject
         private void Form4_Load(object sender, EventArgs e)
         {
             if (userRole == "employee")
-                button2.Enabled = false; // Disable delete button
+                // Tombol Hapus dinonaktifkan untuk role employee
+                bttnHapus.Enabled = false;
 
             LoadKaryawanData();
         }
 
         private void LoadKaryawanData()
         {
-            // Try to get data from cache first
             DataTable dt = _cache.Get(CacheKey) as DataTable;
 
             if (dt == null)
             {
-                // Cache miss: Load from database
                 string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role FROM Karyawan";
 
                 try
@@ -55,10 +53,7 @@ namespace pabdproject
                     {
                         dt = new DataTable();
                         da.Fill(dt);
-
-                        // Store in cache for 5 minutes
-                        var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
-                        _cache.Set(CacheKey, dt, policy);
+                        _cache.Set(CacheKey, dt, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) });
                     }
                 }
                 catch (Exception ex)
@@ -71,8 +66,15 @@ namespace pabdproject
             dataGridView1.DataSource = dt;
         }
 
+        // Tombol Kembali
+        private void button1_Click(object sender, EventArgs e)
+        {
+            new Form2(userRole).Show();
+            this.Hide();
+        }
 
-        private void button2_Click(object sender, EventArgs e)
+        // Tombol Hapus
+        private void bttnHapus_Click(object sender, EventArgs e)
         {
             if (userRole == "employee")
             {
@@ -99,16 +101,12 @@ namespace pabdproject
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
-
                         conn.Open();
-                        int rowsAffected = cmd.ExecuteNonQuery();
-
-                        if (rowsAffected > 0)
+                        if (cmd.ExecuteNonQuery() > 0)
                         {
                             MessageBox.Show("Data karyawan berhasil dihapus.");
-                            _cache.Remove(CacheKey);  // Clear cache
+                            _cache.Remove(CacheKey);
                             LoadKaryawanData();
-                            
                         }
                     }
                 }
@@ -119,56 +117,188 @@ namespace pabdproject
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Form2 form2 = new Form2(userRole);
-            form2.Show();
-            this.Hide();
-        }
-
-        private void button4_Click(object sender, EventArgs e)
+        // Tombol Tambah
+        private void bttnTambah_Click(object sender, EventArgs e)
         {
             ShowAddKaryawanPopup();
         }
 
-        private void ShowAddKaryawanPopup()
+        // Tombol Impor
+        private void button5_Click(object sender, EventArgs e)
         {
-            Form popup = new Form()
+            using (var openFile = new OpenFileDialog { Filter = "Excel Files|*.xlsx;*.xlsm" })
             {
-                Width = 400,
-                Height = 400,
-                Text = "Add New Karyawan"
+                if (openFile.ShowDialog() == DialogResult.OK)
+                    PreviewData(openFile.FileName);
+            }
+        }
+
+        // --- PERUBAHAN DI SINI ---
+        // Tombol Refresh, sekarang juga menampilkan analisis data
+        private void button6_Click(object sender, EventArgs e)
+        {
+            // 1. Muat ulang data
+            _cache.Remove(CacheKey);
+            LoadKaryawanData();
+
+            // 2. Tampilkan analisis setelah data dimuat
+            if (dataGridView1.DataSource is DataTable dt)
+            {
+                int totalRows = dt.Rows.Count;
+                int adminCount = dt.AsEnumerable().Count(row => row.Field<string>("Role") == "admin");
+                int employeeCount = dt.AsEnumerable().Count(row => row.Field<string>("Role") == "employee");
+                MessageBox.Show($"Total Data: {totalRows}\nAdmin: {adminCount}\nEmployee: {employeeCount}", "Analisis Data Karyawan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Data belum dimuat atau tidak valid.");
+            }
+        }
+
+        // Tombol Analisis SQL (Fungsi tidak berubah, sudah benar)
+        private void btnAnalisis_Click(object sender, EventArgs e)
+        {
+            var statsBuilder = new StringBuilder();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.InfoMessage += (obj, args) => {
+                    statsBuilder.AppendLine(args.Message);
+                };
+
+                string query = "SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role FROM Karyawan";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, conn);
+                DataTable dataTable = new DataTable();
+
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("SET STATISTICS IO ON; SET STATISTICS TIME ON;", conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    dataAdapter.Fill(dataTable);
+
+                    using (SqlCommand cmd = new SqlCommand("SET STATISTICS IO OFF; SET STATISTICS TIME OFF;", conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show(
+                        statsBuilder.ToString(),
+                        "STATISTICS INFO",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Terjadi kesalahan saat analisis: " + ex.Message);
+                }
+            }
+        }
+
+        // Fix for CS0136: Renaming the local function parameter 'e' to avoid conflict with the enclosing scope's 'e'.
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Silakan pilih baris data karyawan terlebih dahulu.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedRow = dataGridView1.SelectedRows[0];
+            int idKaryawan = Convert.ToInt32(selectedRow.Cells["ID_Karyawan"].Value);
+            string nama = selectedRow.Cells["Nama"].Value.ToString();
+            string jabatan = selectedRow.Cells["Jabatan"].Value.ToString();
+            string departemen = selectedRow.Cells["Departemen"].Value.ToString();
+            DateTime tanggalMasuk = Convert.ToDateTime(selectedRow.Cells["Tanggal_Masuk"].Value);
+
+            Form popup = new Form { Width = 400, Height = 300, Text = "Update Karyawan" };
+
+            
+            void HanyaHuruf(object senderKeyPress, KeyPressEventArgs keyPressEventArgs)
+            {
+                if (!char.IsControl(keyPressEventArgs.KeyChar) && !char.IsLetter(keyPressEventArgs.KeyChar) && !char.IsWhiteSpace(keyPressEventArgs.KeyChar))
+                {
+                    keyPressEventArgs.Handled = true;
+                }
+            }
+
+            TextBox txtNama = new TextBox { Text = nama };
+            txtNama.KeyPress += HanyaHuruf;
+
+            TextBox txtJabatan = new TextBox { Text = jabatan };
+            txtJabatan.KeyPress += HanyaHuruf;
+
+            TextBox txtDepartemen = new TextBox { Text = departemen };
+            txtDepartemen.KeyPress += HanyaHuruf;
+            DateTimePicker dtTanggal = new DateTimePicker { Value = tanggalMasuk, Format = DateTimePickerFormat.Short, MinDate = DateTime.Today.AddYears(-5), MaxDate = DateTime.Today.AddYears(1) };
+
+            Button btnSimpan = new Button { Text = "Simpan" };
+            btnSimpan.Click += (s, ev) =>
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand("UpdateKaryawan", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
+                    cmd.Parameters.AddWithValue("@Nama", txtNama.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Jabatan", txtJabatan.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Departemen", txtDepartemen.Text.Trim());
+                    cmd.Parameters.AddWithValue("@Tanggal_Masuk", dtTanggal.Value);
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Data berhasil diupdate.");
+                        popup.Close();
+                        _cache.Remove(CacheKey);
+                        LoadKaryawanData();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Gagal mengupdate data: " + ex.Message);
+                    }
+                }
             };
 
-            // Controls
-            TextBox txtNama = new TextBox(), txtJabatan = new TextBox(), txtDepartemen = new TextBox(), txtPassword = new TextBox();
+            AddFormRow(popup, "Nama", txtNama, 20);
+            AddFormRow(popup, "Jabatan", txtJabatan, 60);
+            AddFormRow(popup, "Departemen", txtDepartemen, 100);
+            AddFormRow(popup, "Tanggal Masuk", dtTanggal, 140);
+            popup.Controls.Add(btnSimpan);
+            btnSimpan.SetBounds(150, 200, 100, 30);
 
-            // Tambahkan validasi huruf
+            popup.ShowDialog();
+        }
+
+        #region Helper Methods
+        private void ShowAddKaryawanPopup()
+        {
+            Form popup = new Form { Width = 400, Height = 400, Text = "Add New Karyawan" };
+
+            TextBox txtNama = new TextBox(), txtJabatan = new TextBox(), txtDepartemen = new TextBox(), txtPassword = new TextBox();
             txtNama.KeyPress += OnlyLetters_KeyPress;
             txtJabatan.KeyPress += OnlyLetters_KeyPress;
             txtDepartemen.KeyPress += OnlyLetters_KeyPress;
 
-            DateTimePicker dtTanggal = new DateTimePicker() { Format = DateTimePickerFormat.Short };
-            dtTanggal.MinDate = DateTime.Today.AddYears(-1);
-            dtTanggal.MaxDate = DateTime.Today.AddYears(1);
-
+            DateTimePicker dtTanggal = new DateTimePicker { Format = DateTimePickerFormat.Short, MinDate = DateTime.Today.AddYears(-5), MaxDate = DateTime.Today.AddYears(1) };
             ComboBox cmbRole = new ComboBox();
-            cmbRole.Items.AddRange(new string[] { "employee", "admin" });
+            cmbRole.Items.AddRange(new[] { "employee", "admin" });
+            cmbRole.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbRole.SelectedIndex = 0;
 
-            Button btnSave = new Button() { Text = "Save" };
+            Button btnSave = new Button { Text = "Save" };
             btnSave.Click += (s, ev) =>
             {
-                if (string.IsNullOrWhiteSpace(txtNama.Text) ||
-                    string.IsNullOrWhiteSpace(txtJabatan.Text) ||
-                    string.IsNullOrWhiteSpace(txtDepartemen.Text) ||
-                    string.IsNullOrWhiteSpace(txtPassword.Text))
+                if (string.IsNullOrWhiteSpace(txtNama.Text) || string.IsNullOrWhiteSpace(txtJabatan.Text) || string.IsNullOrWhiteSpace(txtDepartemen.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
                 {
                     MessageBox.Show("Please fill in all fields.");
                     return;
                 }
-
-                // Password minimum 8 karakter
                 if (txtPassword.Text.Trim().Length < 8)
                 {
                     MessageBox.Show("Password must be at least 8 characters long.");
@@ -193,7 +323,7 @@ namespace pabdproject
 
                         MessageBox.Show("Karyawan added successfully.");
                         popup.Close();
-                        _cache.Remove(CacheKey);  // Clear cache
+                        _cache.Remove(CacheKey);
                         LoadKaryawanData();
                     }
                 }
@@ -203,7 +333,6 @@ namespace pabdproject
                 }
             };
 
-            // Layout
             AddFormRow(popup, "Nama", txtNama, 20);
             AddFormRow(popup, "Jabatan", txtJabatan, 60);
             AddFormRow(popup, "Departemen", txtDepartemen, 100);
@@ -216,111 +345,49 @@ namespace pabdproject
             popup.ShowDialog();
         }
 
-        // Fungsi hanya huruf dan spasi
+        private void PreviewData(string filePath)
+        {
+            try
+            {
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    IWorkbook workbook = new XSSFWorkbook(fs);
+                    ISheet sheet = workbook.GetSheetAt(0);
+                    DataTable dt = new DataTable();
+
+                    IRow headerRow = sheet.GetRow(0);
+                    foreach (var cell in headerRow.Cells)
+                        dt.Columns.Add(cell?.ToString() ?? $"Column{cell.ColumnIndex}");
+
+                    for (int i = 1; i <= sheet.LastRowNum; i++)
+                    {
+                        IRow row = sheet.GetRow(i);
+                        if (row == null) continue;
+
+                        DataRow newRow = dt.NewRow();
+                        for (int col = 0; col < dt.Columns.Count; col++)
+                            newRow[col] = row.GetCell(col)?.ToString() ?? string.Empty;
+                        dt.Rows.Add(newRow);
+                    }
+
+                    new PreviewImportForm(dt).ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error reading Excel file: " + ex.Message);
+            }
+        }
+
         private void OnlyLetters_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar) && !char.IsWhiteSpace(e.KeyChar))
-            {
                 e.Handled = true;
-            }
         }
-
-
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if (dataGridView1.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Pilih data karyawan yang akan diupdate.");
-                return;
-            }
-
-            DataGridViewRow row = dataGridView1.SelectedRows[0];
-            int idKaryawan = Convert.ToInt32(row.Cells["ID_Karyawan"].Value);
-
-            Form popup = new Form()
-            {
-                Width = 450,
-                Height = 350,
-                Text = "Update Data Karyawan",
-                StartPosition = FormStartPosition.CenterScreen,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                MinimizeBox = false
-            };
-
-            TextBox txtNama = new TextBox() { Text = row.Cells["Nama"].Value.ToString() };
-            TextBox txtJabatan = new TextBox() { Text = row.Cells["Jabatan"].Value.ToString() };
-            TextBox txtDepartemen = new TextBox() { Text = row.Cells["Departemen"].Value.ToString() };
-
-            // Validasi hanya huruf dan spasi
-            txtNama.KeyPress += OnlyLetters_KeyPress;
-            txtJabatan.KeyPress += OnlyLetters_KeyPress;
-            txtDepartemen.KeyPress += OnlyLetters_KeyPress;
-
-            DateTimePicker dtTanggal = new DateTimePicker()
-            {
-                Format = DateTimePickerFormat.Short,
-                Value = Convert.ToDateTime(row.Cells["Tanggal_Masuk"].Value),
-                MinDate = DateTime.Today.AddYears(-1),
-                MaxDate = DateTime.Today.AddYears(1)
-            };
-
-            Button btnUpdate = new Button() { Text = "Update" };
-            btnUpdate.Click += (s, ev) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtNama.Text) ||
-                    string.IsNullOrWhiteSpace(txtJabatan.Text) ||
-                    string.IsNullOrWhiteSpace(txtDepartemen.Text))
-                {
-                    MessageBox.Show("Semua field harus diisi!");
-                    return;
-                }
-
-                DialogResult confirm = MessageBox.Show("Apakah Anda yakin ingin mengupdate data ini?", "Konfirmasi", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (confirm == DialogResult.Yes)
-                {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
-                    using (SqlCommand cmd = new SqlCommand("UpdateKaryawan", conn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
-                        cmd.Parameters.AddWithValue("@Nama", txtNama.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Jabatan", txtJabatan.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Departemen", txtDepartemen.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Tanggal_Masuk", dtTanggal.Value);
-
-                        conn.Open();
-                        cmd.ExecuteNonQuery();
-                        MessageBox.Show("Data berhasil diupdate.");
-                        popup.Close();
-                        _cache.Remove(CacheKey);
-                        LoadKaryawanData();
-                    }
-                }
-            };
-
-            Button btnCancel = new Button() { Text = "Batal" };
-            btnCancel.Click += (s, ev) => popup.Close();
-
-            AddFormRow(popup, "Nama", txtNama, 20);
-            AddFormRow(popup, "Jabatan", txtJabatan, 60);
-            AddFormRow(popup, "Departemen", txtDepartemen, 100);
-            AddFormRow(popup, "Tanggal Masuk", dtTanggal, 140);
-            popup.Controls.Add(btnUpdate);
-            popup.Controls.Add(btnCancel);
-            btnUpdate.SetBounds(150, 200, 100, 30);
-            btnCancel.SetBounds(260, 200, 100, 30);
-
-            popup.ShowDialog();
-        }
-
-        // Fungsi validasi hanya huruf dan spasi
-
 
         private void AddFormRow(Form form, string labelText, Control inputControl, int top)
         {
-            Label label = new Label() { Text = labelText, Left = 10, Top = top, Width = 120 };
+            Label label = new Label { Text = labelText, Left = 10, Top = top, Width = 120 };
             inputControl.Left = 150;
             inputControl.Top = top;
             inputControl.Width = 200;
@@ -330,84 +397,16 @@ namespace pabdproject
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // You can implement row-click behavior here if needed
+            // Optional: Can be used for other interactions if needed
         }
 
-        private void PreviewData(string filePath)
+        // This button event handler is empty and can be removed from the designer if not used.
+        private void button3_Click(object sender, EventArgs e)
         {
-            try
-            {
-                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                {
-                    IWorkbook workbook = new XSSFWorkbook(fs); // for .xlsx/.xlsm files only
-                    ISheet sheet = workbook.GetSheetAt(0);
-                    DataTable dt = new DataTable();
 
-                    // Header row
-                    IRow headerRow = sheet.GetRow(0);
-                    if (headerRow == null)
-                    {
-                        MessageBox.Show("Sheet is empty or missing header row.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    foreach (var cell in headerRow.Cells)
-                    {
-                        string colName = cell?.ToString() ?? $"Column{cell.ColumnIndex}";
-                        if (!dt.Columns.Contains(colName))
-                            dt.Columns.Add(colName);
-                        else
-                            dt.Columns.Add(colName + "_" + cell.ColumnIndex);
-                    }
-
-                    // Data rows
-                    for (int i = 1; i <= sheet.LastRowNum; i++)
-                    {
-                        IRow row = sheet.GetRow(i);
-                        if (row == null) continue;
-
-                        DataRow newRow = dt.NewRow();
-
-                        for (int colIndex = 0; colIndex < dt.Columns.Count; colIndex++)
-                        {
-                            ICell cell = row.GetCell(colIndex);
-                            if (cell == null)
-                                newRow[colIndex] = string.Empty;
-                            else
-                                newRow[colIndex] = cell.ToString();
-                        }
-
-                        dt.Rows.Add(newRow);
-                    }
-
-                    // Use PreviewImportForm as requested
-                    PreviewImportForm previewForm = new PreviewImportForm(dt);
-                    previewForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error reading the Excel file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
+        #endregion
 
-        private void button5_Click(object sender, EventArgs e)
-        {
-            using (var openFile = new OpenFileDialog())
-            {
-                openFile.Filter = "Excel Files|*.xlsx;*.xlsm";
-                if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    PreviewData(openFile.FileName);  // Call PreviewData here, not PreviewImportForm
-                }
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            _cache.Remove(CacheKey);
-            LoadKaryawanData();
-        }
+       
     }
 }
-

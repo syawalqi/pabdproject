@@ -24,29 +24,29 @@ namespace pabdproject
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Use the role to enable/disable buttons or customize the form behavior here.
+            // Batasi tanggal maksimal dan minimal
+            dateTimePicker1.MinDate = DateTime.Today.AddYears(-5);
+            dateTimePicker1.MaxDate = DateTime.Today.AddYears(1);
+            dateTimePicker1.Format = DateTimePickerFormat.Short;
+
             if (userRole == "employee")
             {
-                // Allow employees to select attendance status (don't disable radio buttons)
-                radioButton1.Enabled = true;  // Enable "Hadir"
-                radioButton2.Enabled = true;  // Enable "Tidak Hadir"
+                radioButton1.Enabled = true;
+                radioButton2.Enabled = true;
 
-                // You can customize other controls if needed for employees
-                // For example, if there's an admin-only feature, you can disable that
-                // e.g., button3.Enabled = false; or hide certain controls
+                // Batasi karyawan hanya bisa mengisi presensi hari ini
+                dateTimePicker1.Value = DateTime.Today;
+                dateTimePicker1.Enabled = false;
             }
             else if (userRole == "admin")
             {
-                // Enable controls for admins (if needed, keep existing settings for admins)
                 radioButton1.Enabled = true;
                 radioButton2.Enabled = true;
-                // Further customization for admins...
+
+                // Admin bisa atur tanggal jika perlu, jadi dibiarkan aktif
             }
-            // Batasi tanggal maksimal dan minimal
-            dateTimePicker1.MinDate = DateTime.Today.AddYears(-1);
-            dateTimePicker1.MaxDate = DateTime.Today.AddYears(1);
-            dateTimePicker1.Format = DateTimePickerFormat.Short;
         }
+
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {

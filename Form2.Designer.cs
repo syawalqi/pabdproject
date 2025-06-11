@@ -36,12 +36,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.Logout = new System.Windows.Forms.Button();
+            this.bttnCuti = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
+            this.panel1.Controls.Add(this.bttnCuti);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
             this.panel1.Controls.Add(this.button2);
@@ -138,6 +140,18 @@
             this.Logout.UseVisualStyleBackColor = false;
             this.Logout.Click += new System.EventHandler(this.Logout_Click);
             // 
+            // bttnCuti
+            // 
+            this.bttnCuti.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.bttnCuti.Location = new System.Drawing.Point(11, 97);
+            this.bttnCuti.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.bttnCuti.Name = "bttnCuti";
+            this.bttnCuti.Size = new System.Drawing.Size(147, 34);
+            this.bttnCuti.TabIndex = 4;
+            this.bttnCuti.Text = "Cuti";
+            this.bttnCuti.UseVisualStyleBackColor = false;
+            this.bttnCuti.Click += new System.EventHandler(this.bttnCuti_Click);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -168,5 +182,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button Logout;
+        private System.Windows.Forms.Button bttnCuti;
     }
 }

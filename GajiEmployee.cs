@@ -22,6 +22,9 @@ namespace pabdproject
         {
             InitializeComponent();
             userRole = role;
+            // Mengganti event handler ke CellClick untuk pemilihan baris dengan satu klik
+            this.dataGajiKaryawan.CellContentClick -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGajiKaryawan_CellContentClick);
+            this.dataGajiKaryawan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGajiKaryawan_CellClick);
         }
 
         private void LoadJoinedData()
@@ -48,8 +51,10 @@ namespace pabdproject
                     dataAdapter.Fill(dataTable);
                     dataGajiKaryawan.DataSource = dataTable;
 
-                    // Optional: Hide the ID_Karyawan column
-                    dataGajiKaryawan.Columns["ID_Karyawan"].Visible = false;
+                    if (dataGajiKaryawan.Columns["ID_Karyawan"] != null)
+                    {
+                        dataGajiKaryawan.Columns["ID_Karyawan"].Visible = false;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -58,42 +63,56 @@ namespace pabdproject
             }
         }
 
-
         private void GajiEmployee_Load(object sender, EventArgs e)
         {
-
+            LoadJoinedData();
         }
 
-        private void dataGajiKaryawan_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        // Event handler yang digunakan adalah CellClick untuk merespons satu kali klik
+        private void dataGajiKaryawan_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Pastikan indeks baris valid
-            if (e.RowIndex >= 0 && e.RowIndex < dataGajiKaryawan.Rows.Count - 1)
+            // Memastikan event berasal dari klik pada baris yang valid (bukan header)
+            if (e.RowIndex >= 0)
             {
                 try
                 {
-                    // Ambil ID_Organisasi dari baris yang dipilih
-                    var ID_KaryawanCellValue = dataGajiKaryawan.Rows[e.RowIndex].Cells["ID_Karyawan"].Value;
+                    DataGridViewRow row = dataGajiKaryawan.Rows[e.RowIndex];
+                    var ID_KaryawanCellValue = row.Cells["ID_Karyawan"].Value;
+
+                    // Memastikan sel yang diklik bukan bagian dari baris baru yang kosong
                     if (ID_KaryawanCellValue != null && ID_KaryawanCellValue != DBNull.Value)
                     {
-                        // Simpan ID yang dipilih untuk digunakan nanti (pada operasi: update/delete)
                         selectedID_Karyawan = Convert.ToInt32(ID_KaryawanCellValue);
 
-                        // Isi TextBox dengan data dari baris yang dipilih
-                        txtNamaKaryawan.Text = dataGajiKaryawan.Rows[e.RowIndex].Cells["Nama"].Value?.ToString() ?? "";
-                        txtGajiKaryawan.Text = dataGajiKaryawan.Rows[e.RowIndex].Cells["Gaji_pokok"].Value?.ToString() ?? "";
-                        txtJabatan.Text = dataGajiKaryawan.Rows[e.RowIndex].Cells["Departemen"].Value?.ToString() ?? "";
-                        txtDepartemen.Text = dataGajiKaryawan.Rows[e.RowIndex].Cells["Jabatan"].Value?.ToString() ?? "";
+                        txtNamaKaryawan.Text = row.Cells["Nama"].Value?.ToString() ?? "";
+                        txtGajiKaryawan.Text = row.Cells["Gaji_Pokok"].Value?.ToString() ?? "";
+                        txtJabatan.Text = row.Cells["Jabatan"].Value?.ToString() ?? "";
+                        txtDepartemen.Text = row.Cells["Departemen"].Value?.ToString() ?? "";
+
+                        lblMessage.Text = $"Data karyawan ID {selectedID_Karyawan} siap diubah.";
                     }
                     else
                     {
-                        lblMessage.Text = "ID organisasi tidak valid.";
+                        // Membersihkan textbox jika baris yang diklik adalah baris kosong di akhir
+                        selectedID_Karyawan = -1;
+                        txtNamaKaryawan.Clear();
+                        txtGajiKaryawan.Clear();
+                        txtJabatan.Clear();
+                        txtDepartemen.Clear();
+                        lblMessage.Text = "Pilih baris data yang valid.";
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error saat mengambil data: " + ex.Message);
+                    MessageBox.Show("Error saat memilih data: " + ex.Message);
                 }
             }
+        }
+
+        // Ini adalah handler lama, bisa dihapus atau dibiarkan kosong karena sudah tidak terpakai
+        private void dataGajiKaryawan_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Logika sudah dipindahkan ke dataGajiKaryawan_CellClick
         }
 
         private void btnInsert_Click(object sender, EventArgs e)
@@ -103,7 +122,6 @@ namespace pabdproject
             string jabatan = txtJabatan.Text;
             string departemen = txtDepartemen.Text;
 
-            // Validasi input
             if (string.IsNullOrEmpty(namaKaryawan) || string.IsNullOrEmpty(gajiPokokStr) ||
                 string.IsNullOrEmpty(jabatan) || string.IsNullOrEmpty(departemen))
             {
@@ -120,36 +138,33 @@ namespace pabdproject
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 SqlTransaction transaction = null;
-
                 try
                 {
                     conn.Open();
                     transaction = conn.BeginTransaction();
 
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = conn;
-                    cmd.Transaction = transaction;
+                    SqlCommand cmd = new SqlCommand
+                    {
+                        Connection = conn,
+                        Transaction = transaction
+                    };
 
-                    // Insert ke tabel Karyawan
                     cmd.CommandText = @"
                         INSERT INTO Karyawan (Nama, Jabatan, Departemen)
                         VALUES (@Nama, @Jabatan, @Departemen);
                         SELECT SCOPE_IDENTITY();";
-                    cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
                     cmd.Parameters.AddWithValue("@Jabatan", jabatan);
                     cmd.Parameters.AddWithValue("@Departemen", departemen);
 
                     int idKaryawan = Convert.ToInt32(cmd.ExecuteScalar());
 
-                    // Insert ke tabel Gaji
                     cmd.CommandText = @"
                         INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
                         VALUES (@ID_Karyawan, @Gaji_Pokok)";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
                     cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
-
                     cmd.ExecuteNonQuery();
 
                     transaction.Commit();
@@ -177,7 +192,6 @@ namespace pabdproject
             string departemen = txtDepartemen.Text;
             string gajiStr = txtGajiKaryawan.Text;
 
-            // Validasi input
             if (string.IsNullOrEmpty(namaKaryawan) || string.IsNullOrEmpty(jabatan) ||
                 string.IsNullOrEmpty(departemen) || !decimal.TryParse(gajiStr, out decimal gajiPokok))
             {
@@ -188,60 +202,43 @@ namespace pabdproject
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 SqlTransaction transaction = null;
-
                 try
                 {
                     conn.Open();
                     transaction = conn.BeginTransaction();
+                    SqlCommand cmd = new SqlCommand { Connection = conn, Transaction = transaction };
 
-                    SqlCommand cmd = new SqlCommand
-                    {
-                        Connection = conn,
-                        Transaction = transaction
-                    };
-
-                    // Update data Karyawan
                     cmd.CommandText = @"
-                UPDATE Karyawan
-                SET Nama = @Nama, Jabatan = @Jabatan, Departemen = @Departemen
-                WHERE ID_Karyawan = @ID_Karyawan";
+                        UPDATE Karyawan
+                        SET Nama = @Nama, Jabatan = @Jabatan, Departemen = @Departemen
+                        WHERE ID_Karyawan = @ID_Karyawan";
                     cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
                     cmd.Parameters.AddWithValue("@Jabatan", jabatan);
                     cmd.Parameters.AddWithValue("@Departemen", departemen);
                     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
                     cmd.ExecuteNonQuery();
 
-                    // Update data Gaji (opsional: hanya jika ada 1 entri gaji atau update entri terakhir)
-                    // Check if Gaji exists
-                    // Check if Gaji exists
                     cmd.CommandText = "SELECT COUNT(*) FROM Gaji WHERE ID_Karyawan = @ID_Karyawan";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-
                     int count = (int)cmd.ExecuteScalar();
 
                     if (count > 0)
                     {
-                        // Update existing Gaji
-                    cmd.CommandText = @"
-                    UPDATE Gaji
-                    SET Gaji_Pokok = @Gaji_Pokok
-                    WHERE ID_Karyawan = @ID_Karyawan";
+                        cmd.CommandText = @"
+                            UPDATE Gaji SET Gaji_Pokok = @Gaji_Pokok
+                            WHERE ID_Karyawan = @ID_Karyawan";
                     }
                     else
                     {
-                        // Insert new Gaji
-                    cmd.CommandText = @"
-                    INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
-                    VALUES (@ID_Karyawan, @Gaji_Pokok)";
+                        cmd.CommandText = @"
+                            INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
+                            VALUES (@ID_Karyawan, @Gaji_Pokok)";
                     }
-
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
                     cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
                     cmd.ExecuteNonQuery();
-
-
 
                     transaction.Commit();
                     lblMessage.Text = "Data berhasil diubah.";
@@ -266,24 +263,16 @@ namespace pabdproject
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 SqlTransaction transaction = null;
-
                 try
                 {
                     conn.Open();
                     transaction = conn.BeginTransaction();
+                    SqlCommand cmd = new SqlCommand { Connection = conn, Transaction = transaction };
 
-                    SqlCommand cmd = new SqlCommand
-                    {
-                        Connection = conn,
-                        Transaction = transaction
-                    };
-
-                    // Delete from Gaji table (foreign key dependency)
                     cmd.CommandText = "DELETE FROM Gaji WHERE ID_Karyawan = @ID_Karyawan";
                     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
                     cmd.ExecuteNonQuery();
 
-                    // Delete from Karyawan table
                     cmd.CommandText = "DELETE FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
@@ -291,7 +280,7 @@ namespace pabdproject
 
                     transaction.Commit();
                     lblMessage.Text = "Data berhasil dihapus.";
-                    LoadJoinedData(); // Refresh after deletion
+                    LoadJoinedData();
                     selectedID_Karyawan = -1;
                 }
                 catch (Exception ex)
@@ -304,7 +293,7 @@ namespace pabdproject
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadJoinedData(); // Refresh after deletion
+            LoadJoinedData();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -312,6 +301,52 @@ namespace pabdproject
             Form2 form2 = new Form2(userRole);
             form2.Show();
             this.Hide();
+        }
+
+        // Tombol analisis yang menampilkan statistik performa SQL
+        private void bttnAnalisisGaji_Click(object sender, EventArgs e)
+        {
+            var statsBuilder = new StringBuilder();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.InfoMessage += (obj, args) => {
+                    statsBuilder.AppendLine(args.Message);
+                };
+
+                string query = @"
+                SELECT k.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, g.Gaji_Pokok
+                FROM Karyawan k LEFT JOIN Gaji g ON k.ID_Karyawan = g.ID_Karyawan";
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, conn);
+                DataTable dataTable = new DataTable();
+
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("SET STATISTICS IO ON; SET STATISTICS TIME ON;", conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    dataAdapter.Fill(dataTable);
+
+                    using (SqlCommand cmd = new SqlCommand("SET STATISTICS IO OFF; SET STATISTICS TIME OFF;", conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show(
+                        statsBuilder.ToString(),
+                        "STATISTICS INFO",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Terjadi kesalahan saat analisis: " + ex.Message);
+                }
+            }
         }
     }
 }

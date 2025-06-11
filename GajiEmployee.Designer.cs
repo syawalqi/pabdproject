@@ -41,6 +41,7 @@
             this.txtDepartemen = new System.Windows.Forms.TextBox();
             this.lblDepartemen = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.bttnAnalisisGaji = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGajiKaryawan)).BeginInit();
             this.SuspendLayout();
             // 
@@ -59,7 +60,7 @@
             // btnUpdate
             // 
             this.btnUpdate.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.btnUpdate.Location = new System.Drawing.Point(289, 291);
+            this.btnUpdate.Location = new System.Drawing.Point(265, 291);
             this.btnUpdate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(138, 38);
@@ -71,7 +72,7 @@
             // btnRefresh
             // 
             this.btnRefresh.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.btnRefresh.Location = new System.Drawing.Point(47, 291);
+            this.btnRefresh.Location = new System.Drawing.Point(77, 291);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(138, 38);
@@ -160,7 +161,7 @@
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.LightCoral;
-            this.button1.Location = new System.Drawing.Point(169, 364);
+            this.button1.Location = new System.Drawing.Point(77, 360);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(138, 38);
@@ -169,12 +170,24 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // bttnAnalisisGaji
+            // 
+            this.bttnAnalisisGaji.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.bttnAnalisisGaji.Location = new System.Drawing.Point(265, 360);
+            this.bttnAnalisisGaji.Name = "bttnAnalisisGaji";
+            this.bttnAnalisisGaji.Size = new System.Drawing.Size(138, 38);
+            this.bttnAnalisisGaji.TabIndex = 16;
+            this.bttnAnalisisGaji.Text = "ANALISIS";
+            this.bttnAnalisisGaji.UseVisualStyleBackColor = false;
+            this.bttnAnalisisGaji.Click += new System.EventHandler(this.bttnAnalisisGaji_Click);
+            // 
             // GajiEmployee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(215)))), ((int)(((byte)(191)))), ((int)(((byte)(186)))));
             this.ClientSize = new System.Drawing.Size(1204, 512);
+            this.Controls.Add(this.bttnAnalisisGaji);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lblDepartemen);
             this.Controls.Add(this.txtDepartemen);
@@ -213,5 +226,6 @@
         private System.Windows.Forms.TextBox txtDepartemen;
         private System.Windows.Forms.Label lblDepartemen;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button bttnAnalisisGaji;
     }
 }
