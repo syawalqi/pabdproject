@@ -84,7 +84,7 @@ namespace pabdproject
             }
 
             // Connection string for SQL Server
-            string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
 
             try
             {
