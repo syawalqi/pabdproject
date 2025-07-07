@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.bttnCuti = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -36,13 +37,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.Logout = new System.Windows.Forms.Button();
-            this.bttnCuti = new System.Windows.Forms.Button();
+            this.bttnShiftKaryawan = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
+            this.panel1.Controls.Add(this.bttnShiftKaryawan);
             this.panel1.Controls.Add(this.bttnCuti);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
@@ -56,10 +58,22 @@
             this.panel1.Size = new System.Drawing.Size(172, 360);
             this.panel1.TabIndex = 0;
             // 
+            // bttnCuti
+            // 
+            this.bttnCuti.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.bttnCuti.Location = new System.Drawing.Point(11, 97);
+            this.bttnCuti.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.bttnCuti.Name = "bttnCuti";
+            this.bttnCuti.Size = new System.Drawing.Size(147, 34);
+            this.bttnCuti.TabIndex = 4;
+            this.bttnCuti.Text = "Cuti";
+            this.bttnCuti.UseVisualStyleBackColor = false;
+            this.bttnCuti.Click += new System.EventHandler(this.bttnCuti_Click);
+            // 
             // button4
             // 
             this.button4.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.button4.Location = new System.Drawing.Point(11, 235);
+            this.button4.Location = new System.Drawing.Point(12, 211);
             this.button4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(147, 34);
@@ -71,7 +85,7 @@
             // button3
             // 
             this.button3.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.button3.Location = new System.Drawing.Point(11, 198);
+            this.button3.Location = new System.Drawing.Point(12, 173);
             this.button3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(147, 34);
@@ -83,7 +97,7 @@
             // button2
             // 
             this.button2.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.button2.Location = new System.Drawing.Point(11, 160);
+            this.button2.Location = new System.Drawing.Point(11, 135);
             this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(147, 34);
@@ -140,17 +154,17 @@
             this.Logout.UseVisualStyleBackColor = false;
             this.Logout.Click += new System.EventHandler(this.Logout_Click);
             // 
-            // bttnCuti
+            // bttnShiftKaryawan
             // 
-            this.bttnCuti.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.bttnCuti.Location = new System.Drawing.Point(11, 97);
-            this.bttnCuti.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.bttnCuti.Name = "bttnCuti";
-            this.bttnCuti.Size = new System.Drawing.Size(147, 34);
-            this.bttnCuti.TabIndex = 4;
-            this.bttnCuti.Text = "Cuti";
-            this.bttnCuti.UseVisualStyleBackColor = false;
-            this.bttnCuti.Click += new System.EventHandler(this.bttnCuti_Click);
+            this.bttnShiftKaryawan.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.bttnShiftKaryawan.Location = new System.Drawing.Point(12, 249);
+            this.bttnShiftKaryawan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.bttnShiftKaryawan.Name = "bttnShiftKaryawan";
+            this.bttnShiftKaryawan.Size = new System.Drawing.Size(147, 34);
+            this.bttnShiftKaryawan.TabIndex = 5;
+            this.bttnShiftKaryawan.Text = "Shift Karyawan";
+            this.bttnShiftKaryawan.UseVisualStyleBackColor = false;
+            this.bttnShiftKaryawan.Click += new System.EventHandler(this.bttnShiftKaryawan_Click);
             // 
             // Form2
             // 
@@ -183,5 +197,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button Logout;
         private System.Windows.Forms.Button bttnCuti;
+        private System.Windows.Forms.Button bttnShiftKaryawan;
     }
 }

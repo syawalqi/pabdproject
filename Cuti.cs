@@ -430,5 +430,10 @@ namespace pabdproject
         {
 
         }
+
+        private void dgvCuti_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

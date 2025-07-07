@@ -210,6 +210,7 @@
             this.dgvCuti.Size = new System.Drawing.Size(623, 121);
             this.dgvCuti.TabIndex = 13;
             this.dgvCuti.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCuti_CellClick);
+            this.dgvCuti.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCuti_CellContentClick);
             // 
             // FormCutiPengajuan
             // 

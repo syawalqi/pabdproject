@@ -36,6 +36,7 @@ namespace pabdproject
                 // Asumsikan Anda telah menambahkan tombol dengan nama 'btnCuti' di designer
                 bttnCuti.Visible = true;
                 bttnCuti.Text = "Ajukan/Lihat Cuti";
+                bttnShiftKaryawan.Visible = false;
             }
             else if (userRole == "admin" || userRole == "hrd") // Pastikan 'hrd' ada di sini
             {
@@ -47,6 +48,7 @@ namespace pabdproject
                 // Tampilkan tombol Cuti untuk admin/hrd
                 bttnCuti.Visible = true;
                 bttnCuti.Text = "Kelola Cuti";
+                bttnShiftKaryawan.Visible = true;
             }
             else
             {
@@ -156,5 +158,20 @@ namespace pabdproject
             formCuti.Show();
             this.Hide();
         }
+
+        private void bttnShiftKaryawan_Click(object sender, EventArgs e)
+        {
+            if (userRole == "employee")
+            {
+                MessageBox.Show("Fitur ini tidak tersedia untuk karyawan.", "Akses Ditolak", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Perbaikan: Teruskan userRole ke konstruktor FormShiftKaryawan
+            var shiftForm = new FormShiftKaryawan(userRole); // <--- Pastikan baris ini sudah benar
+            shiftForm.Show(); // Tampilkan FormShiftKaryawan
+            this.Hide(); // Sembunyikan Form2 saat FormShiftKaryawan terbuka
+        }
     }
 }
+
