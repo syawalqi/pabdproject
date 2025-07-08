@@ -29,6 +29,8 @@ namespace pabdproject
 
         private void Form5_Load(object sender, EventArgs e)
         {
+            EnsureAttendanceIndexes();
+            LoadStatusOptions();
             _cache.Remove(CacheKey);
             LoadAttendanceData();
         }
@@ -62,9 +64,18 @@ namespace pabdproject
             {
                 // Cache miss - load from DB
                 const string query = @"
-                    SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, h.Waktu_Masuk, h.Waktu_Keluar, h.Status
-                    FROM Kehadiran h
-                    INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
+                SELECT 
+                    h.ID_Kehadiran, 
+                    h.ID_Karyawan, 
+                    k.Nama, 
+                    k.Jabatan, 
+                    k.Departemen, 
+                    h.Tanggal,     
+                    h.Waktu_Masuk, 
+                    h.Waktu_Keluar, 
+                    h.Status
+                FROM Kehadiran h
+                INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
                 try
                 {
                     using (var conn = new SqlConnection(connectionString))
@@ -149,5 +160,146 @@ namespace pabdproject
             exportreport.Show();
             this.Hide();
         }
+
+
+        private void EnsureAttendanceIndexes()
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        // Index on (ID_Karyawan, Tanggal)
+                        cmd.CommandText = @"
+                            IF NOT EXISTS (
+                                SELECT 1 FROM sys.indexes 
+                                WHERE name = 'idx_Kehadiran_Karyawan_Tanggal' AND object_id = OBJECT_ID('Kehadiran')
+                            )
+                            BEGIN
+                                CREATE NONCLUSTERED INDEX idx_Kehadiran_Karyawan_Tanggal
+                                ON Kehadiran(ID_Karyawan, Tanggal);
+                            END";
+                        cmd.ExecuteNonQuery();
+
+                        // Optional: Index on Tanggal
+                        cmd.CommandText = @"
+                            IF NOT EXISTS (
+                                SELECT 1 FROM sys.indexes 
+                                WHERE name = 'idx_Kehadiran_Tanggal' AND object_id = OBJECT_ID('Kehadiran')
+                            )
+                            BEGIN
+                                CREATE NONCLUSTERED INDEX idx_Kehadiran_Tanggal
+                                ON Kehadiran(Tanggal);
+                            END";
+                        cmd.ExecuteNonQuery();
+
+                        // Optional: Index on Status
+                        cmd.CommandText = @"
+                            IF NOT EXISTS (
+                                SELECT 1 FROM sys.indexes 
+                                WHERE name = 'idx_Kehadiran_Status' AND object_id = OBJECT_ID('Kehadiran')
+                            )
+                            BEGIN
+                                CREATE NONCLUSTERED INDEX idx_Kehadiran_Status
+                                ON Kehadiran(Status);
+                            END";
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to create indexes: " + ex.Message);
+                }
+            }
+        }
+
+        private void SearchAttendanceData()
+        {
+            StringBuilder query = new StringBuilder(@"
+                SELECT h.ID_Kehadiran, h.ID_Karyawan, k.Nama, k.Jabatan, k.Departemen, 
+                       h.Waktu_Masuk, h.Waktu_Keluar, h.Status
+                FROM Kehadiran h
+                INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan
+                WHERE 1=1");
+
+            var parameters = new List<SqlParameter>();
+
+            if (!string.IsNullOrWhiteSpace(txtSearchNama.Text))
+            {
+                query.Append(" AND k.Nama LIKE @Nama");
+                parameters.Add(new SqlParameter("@Nama", "%" + txtSearchNama.Text + "%"));
+            }
+
+            if (cmbStatus.SelectedItem != null && cmbStatus.SelectedItem.ToString() != "")
+            {
+                query.Append(" AND h.Status = @Status");
+                parameters.Add(new SqlParameter("@Status", cmbStatus.SelectedItem.ToString()));
+            }
+
+            if (dateSearch.Checked)
+            {
+                query.Append(" AND h.Tanggal = @Tanggal");
+                parameters.Add(new SqlParameter("@Tanggal", dateSearch.Value.Date));
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(query.ToString(), conn))
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    cmd.Parameters.AddRange(parameters.ToArray());
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    dataGridView1.DataSource = dt;
+
+                    dataGridView1.Columns["Waktu_Masuk"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+                    dataGridView1.Columns["Waktu_Keluar"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Search error: " + ex.Message);
+            }
+        }
+
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            _cache.Remove(CacheKey); // Optional: force fresh result
+            SearchAttendanceData();
+        }
+
+
+        private void LoadStatusOptions()
+        {
+            cmbStatus.Items.Clear();
+            cmbStatus.Items.Add(""); // Add empty option for "no filter"
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT Status FROM Kehadiran ORDER BY Status", conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cmbStatus.Items.Add(reader["Status"].ToString());
+                        }
+                    }
+                }
+
+                cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load status list: " + ex.Message);
+            }
+        }
+
     }
 }

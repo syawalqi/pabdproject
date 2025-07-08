@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static NPOI.HSSF.Util.HSSFColor;
+using System.Runtime.Caching;
 
 namespace pabdproject
 {
@@ -17,6 +18,8 @@ namespace pabdproject
         private readonly string userRole;
         private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
         private int selectedID_Karyawan = -1;
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private const string CacheKey = "GajiData";
 
         public GajiEmployee(string role)
         {
@@ -29,38 +32,43 @@ namespace pabdproject
 
         private void LoadJoinedData()
         {
+            if (_cache.Contains(CacheKey))
+            {
+                dataGajiKaryawan.DataSource = _cache.Get(CacheKey) as DataTable;
+                return;
+            }
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"
-                SELECT
-                    k.ID_Karyawan,
-                    k.Nama,
-                    k.Jabatan,
-                    k.Departemen,
-                    g.Gaji_Pokok
-                FROM
-                    Karyawan k
-                LEFT JOIN
-                    Gaji g ON k.ID_Karyawan = g.ID_Karyawan";
+            SELECT
+                k.ID_Karyawan,
+                k.Nama,
+                k.Jabatan,
+                k.Departemen,
+                g.Gaji_Pokok
+            FROM
+                Karyawan k
+            LEFT JOIN
+                Gaji g ON k.ID_Karyawan = g.ID_Karyawan";
 
-                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, conn);
-                DataTable dataTable = new DataTable();
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
 
                 try
                 {
-                    dataAdapter.Fill(dataTable);
-                    dataGajiKaryawan.DataSource = dataTable;
-
-                    if (dataGajiKaryawan.Columns["ID_Karyawan"] != null)
-                    {
-                        dataGajiKaryawan.Columns["ID_Karyawan"].Visible = false;
-                    }
+                    adapter.Fill(dt);
+                    _cache.Set(CacheKey, dt, new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) });
+                    dataGajiKaryawan.DataSource = dt;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error loading data: " + ex.Message);
                 }
             }
+
+            if (dataGajiKaryawan.Columns["ID_Karyawan"] != null)
+                dataGajiKaryawan.Columns["ID_Karyawan"].Visible = false;
         }
 
         private void GajiEmployee_Load(object sender, EventArgs e)
@@ -115,69 +123,7 @@ namespace pabdproject
             // Logika sudah dipindahkan ke dataGajiKaryawan_CellClick
         }
 
-        private void btnInsert_Click(object sender, EventArgs e)
-        {
-            string namaKaryawan = txtNamaKaryawan.Text;
-            string gajiPokokStr = txtGajiKaryawan.Text;
-            string jabatan = txtJabatan.Text;
-            string departemen = txtDepartemen.Text;
 
-            if (string.IsNullOrEmpty(namaKaryawan) || string.IsNullOrEmpty(gajiPokokStr) ||
-                string.IsNullOrEmpty(jabatan) || string.IsNullOrEmpty(departemen))
-            {
-                lblMessage.Text = "Isi semua kolom terlebih dahulu.";
-                return;
-            }
-
-            if (!decimal.TryParse(gajiPokokStr, out decimal gajiPokok))
-            {
-                lblMessage.Text = "Gaji harus berupa angka.";
-                return;
-            }
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                SqlTransaction transaction = null;
-                try
-                {
-                    conn.Open();
-                    transaction = conn.BeginTransaction();
-
-                    SqlCommand cmd = new SqlCommand
-                    {
-                        Connection = conn,
-                        Transaction = transaction
-                    };
-
-                    cmd.CommandText = @"
-                        INSERT INTO Karyawan (Nama, Jabatan, Departemen)
-                        VALUES (@Nama, @Jabatan, @Departemen);
-                        SELECT SCOPE_IDENTITY();";
-                    cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
-                    cmd.Parameters.AddWithValue("@Jabatan", jabatan);
-                    cmd.Parameters.AddWithValue("@Departemen", departemen);
-
-                    int idKaryawan = Convert.ToInt32(cmd.ExecuteScalar());
-
-                    cmd.CommandText = @"
-                        INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
-                        VALUES (@ID_Karyawan, @Gaji_Pokok)";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", idKaryawan);
-                    cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
-                    cmd.ExecuteNonQuery();
-
-                    transaction.Commit();
-                    lblMessage.Text = "Data karyawan dan gaji berhasil disimpan.";
-                    LoadJoinedData();
-                }
-                catch (Exception ex)
-                {
-                    transaction?.Rollback();
-                    lblMessage.Text = "Terjadi kesalahan: " + ex.Message;
-                }
-            }
-        }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
@@ -206,39 +152,27 @@ namespace pabdproject
                 {
                     conn.Open();
                     transaction = conn.BeginTransaction();
-                    SqlCommand cmd = new SqlCommand { Connection = conn, Transaction = transaction };
 
-                    cmd.CommandText = @"
-                        UPDATE Karyawan
-                        SET Nama = @Nama, Jabatan = @Jabatan, Departemen = @Departemen
-                        WHERE ID_Karyawan = @ID_Karyawan";
-                    cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
-                    cmd.Parameters.AddWithValue("@Jabatan", jabatan);
-                    cmd.Parameters.AddWithValue("@Departemen", departemen);
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-                    cmd.ExecuteNonQuery();
-
-                    cmd.CommandText = "SELECT COUNT(*) FROM Gaji WHERE ID_Karyawan = @ID_Karyawan";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-                    int count = (int)cmd.ExecuteScalar();
-
-                    if (count > 0)
+                    // Update Karyawan using stored procedure
+                    using (SqlCommand cmd = new SqlCommand("sp_UpdateKaryawan", conn, transaction))
                     {
-                        cmd.CommandText = @"
-                            UPDATE Gaji SET Gaji_Pokok = @Gaji_Pokok
-                            WHERE ID_Karyawan = @ID_Karyawan";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
+                        cmd.Parameters.AddWithValue("@Nama", namaKaryawan);
+                        cmd.Parameters.AddWithValue("@Jabatan", jabatan);
+                        cmd.Parameters.AddWithValue("@Departemen", departemen);
+                        cmd.ExecuteNonQuery();
                     }
-                    else
+
+
+                    // Upsert Gaji using stored procedure
+                    using (SqlCommand cmd = new SqlCommand("sp_UpsertGaji", conn, transaction))
                     {
-                        cmd.CommandText = @"
-                            INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
-                            VALUES (@ID_Karyawan, @Gaji_Pokok)";
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
+                        cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
+                        cmd.ExecuteNonQuery();
                     }
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-                    cmd.Parameters.AddWithValue("@Gaji_Pokok", gajiPokok);
-                    cmd.ExecuteNonQuery();
 
                     transaction.Commit();
                     lblMessage.Text = "Data berhasil diubah.";
@@ -252,47 +186,9 @@ namespace pabdproject
             }
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
-        {
-            if (selectedID_Karyawan == -1)
-            {
-                lblMessage.Text = "Pilih karyawan yang ingin dihapus";
-                return;
-            }
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                SqlTransaction transaction = null;
-                try
-                {
-                    conn.Open();
-                    transaction = conn.BeginTransaction();
-                    SqlCommand cmd = new SqlCommand { Connection = conn, Transaction = transaction };
-
-                    cmd.CommandText = "DELETE FROM Gaji WHERE ID_Karyawan = @ID_Karyawan";
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-                    cmd.ExecuteNonQuery();
-
-                    cmd.CommandText = "DELETE FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@ID_Karyawan", selectedID_Karyawan);
-                    cmd.ExecuteNonQuery();
-
-                    transaction.Commit();
-                    lblMessage.Text = "Data berhasil dihapus.";
-                    LoadJoinedData();
-                    selectedID_Karyawan = -1;
-                }
-                catch (Exception ex)
-                {
-                    transaction?.Rollback();
-                    lblMessage.Text = "Error: " + ex.Message;
-                }
-            }
-        }
-
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            _cache.Remove(CacheKey);
             LoadJoinedData();
         }
 
