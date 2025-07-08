@@ -101,11 +101,23 @@ namespace pabdproject
                         // Specify that this is a stored procedure call
                         cmd.CommandType = CommandType.StoredProcedure;
 
+                        // Inside try
+                        selectedDate = selectedDate.Date;
+                        DateTime waktuNow = DateTime.Now;
+                        DateTime waktuMasuk = new DateTime(
+                            selectedDate.Year,
+                            selectedDate.Month,
+                            selectedDate.Day,
+                            waktuNow.Hour,
+                            waktuNow.Minute,
+                            waktuNow.Second
+                        );
+
                         // Add parameters safely to avoid SQL injection
                         cmd.Parameters.AddWithValue("@ID_Karyawan", userID);
                         cmd.Parameters.AddWithValue("@Tanggal", selectedDate);
                         cmd.Parameters.AddWithValue("@Status", status);
-                        cmd.Parameters.AddWithValue("@Waktu_Masuk", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@Waktu_Masuk", waktuMasuk);
 
                         // Execute the stored procedure
                         cmd.ExecuteNonQuery();
