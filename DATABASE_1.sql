@@ -38,6 +38,21 @@ ALTER TABLE Kehadiran
 ALTER TABLE Kehadiran
     ALTER COLUMN Waktu_Keluar DATETIME2 NULL;
 
+------------------------------------------------------
+---(INDEXES UNTUK KEHADIRAN))!!!!
+CREATE NONCLUSTERED INDEX idx_Kehadiran_Karyawan_Tanggal
+ON Kehadiran(ID_Karyawan, Tanggal);
+
+CREATE NONCLUSTERED INDEX idx_Kehadiran_IDKaryawan
+ON Kehadiran(ID_Karyawan);
+
+CREATE NONCLUSTERED INDEX idx_Kehadiran_Tanggal
+ON Kehadiran(Tanggal);
+
+CREATE NONCLUSTERED INDEX idx_Kehadiran_Status
+ON Kehadiran(Status);
+--------------------------------------------------------
+
 CREATE TABLE Cuti (
     ID_Cuti INT IDENTITY(1,1) PRIMARY KEY,
     ID_Karyawan INT NOT NULL,
@@ -297,7 +312,7 @@ BEGIN
 END
 
 
-
+---------------------------------------------------------------------------------------------------------------------------
 
 
 CREATE PROCEDURE AjukanCuti
@@ -454,3 +469,140 @@ BEGIN
     END CATCH
 END;
 
+--------------------------------------------------------------------------------------------------------------------
+
+--CREATE NONCLUSTERED INDEX idx_Karyawan_Nama ON Karyawan(Nama);
+--CREATE NONCLUSTERED INDEX idx_Karyawan_Jabatan ON Karyawan(Jabatan);
+--CREATE NONCLUSTERED INDEX idx_Karyawan_Departemen ON Karyawan(Departemen);
+--CREATE NONCLUSTERED INDEX idx_Karyawan_Role ON Karyawan(Role);
+
+
+
+--SET SHOWPLAN_ALL ON;
+--GO
+
+--SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role 
+--FROM Karyawan 
+--WHERE 
+    --Nama LIKE 'admin%' OR 
+    --Jabatan LIKE 'admin%' OR 
+    --Departemen LIKE 'admin%' OR 
+    --Role LIKE 'admin%';
+
+--GO
+--SET SHOWPLAN_ALL OFF;
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+SET SHOWPLAN_ALL ON;
+GO
+
+-- Paste your full search query here:
+SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role 
+FROM Karyawan 
+WHERE Nama LIKE 'a%'
+
+UNION ALL
+
+SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role 
+FROM Karyawan 
+WHERE Jabatan LIKE 'a%'
+
+UNION ALL
+
+SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role 
+FROM Karyawan 
+WHERE Departemen LIKE 'a%'
+
+UNION ALL
+
+SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role 
+FROM Karyawan 
+WHERE Role LIKE 'a%';
+
+GO
+SET SHOWPLAN_ALL OFF;
+
+---------------------------------------------------------------------------------------------
+-- Recreate index on Nama
+DROP INDEX IF EXISTS idx_Karyawan_Nama ON dbo.Karyawan;
+CREATE NONCLUSTERED INDEX idx_Karyawan_Nama 
+ON dbo.Karyawan(Nama)
+INCLUDE (Jabatan, Departemen, Tanggal_Masuk, Role);
+
+-- Repeat for others:
+DROP INDEX IF EXISTS idx_Karyawan_Jabatan ON dbo.Karyawan;
+CREATE NONCLUSTERED INDEX idx_Karyawan_Jabatan 
+ON dbo.Karyawan(Jabatan)
+INCLUDE (Nama, Departemen, Tanggal_Masuk, Role);
+
+DROP INDEX IF EXISTS idx_Karyawan_Departemen ON dbo.Karyawan;
+CREATE NONCLUSTERED INDEX idx_Karyawan_Departemen 
+ON dbo.Karyawan(Departemen)
+INCLUDE (Nama, Jabatan, Tanggal_Masuk, Role);
+
+DROP INDEX IF EXISTS idx_Karyawan_Role ON dbo.Karyawan;
+CREATE NONCLUSTERED INDEX idx_Karyawan_Role 
+ON dbo.Karyawan(Role)
+INCLUDE (Nama, Jabatan, Departemen, Tanggal_Masuk);
+----------------------------------------------------------------------------------------------------------------------------------
+
+DELETE FROM Kehadiran;
+DELETE FROM Cuti;
+DELETE FROM Gaji;
+-- Then:
+DELETE FROM Karyawan;
+DBCC CHECKIDENT ('Karyawan', RESEED, 0);
+
+
+------------------------------------------------------------------------------------------------------------------------
+--(STORED PROCEDURE UNTUK FORM GAJIKARYAWAN)!!!!!!!
+
+-- Stored procedure to update Karyawan data
+CREATE PROCEDURE sp_UpdateKaryawan
+    @ID_Karyawan INT,
+    @Nama NVARCHAR(100),
+    @Jabatan NVARCHAR(100),
+    @Departemen NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Karyawan
+    SET Nama = @Nama,
+        Jabatan = @Jabatan,
+        Departemen = @Departemen
+    WHERE ID_Karyawan = @ID_Karyawan;
+END
+GO
+
+-- Stored procedure to insert or update Gaji data (Upsert)
+CREATE PROCEDURE sp_UpsertGaji
+    @ID_Karyawan INT,
+    @Gaji_Pokok DECIMAL(18, 2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM Gaji WHERE ID_Karyawan = @ID_Karyawan)
+    BEGIN
+        UPDATE Gaji
+        SET Gaji_Pokok = @Gaji_Pokok
+        WHERE ID_Karyawan = @ID_Karyawan;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO Gaji (ID_Karyawan, Gaji_Pokok)
+        VALUES (@ID_Karyawan, @Gaji_Pokok);
+    END
+END
+GO
+
+----------(GAJIKARYAWAN INDEXES)!!!!!
+
+CREATE NONCLUSTERED INDEX idx_Karyawan_ID ON Karyawan(ID_Karyawan);
+CREATE NONCLUSTERED INDEX idx_Gaji_ID ON Gaji(ID_Karyawan);
+
+----------
