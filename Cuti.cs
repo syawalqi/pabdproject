@@ -9,7 +9,7 @@ namespace pabdproject
 {
     public partial class FormCutiPengajuan : Form
     {
-        private string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
         private int loggedInKaryawanID;
         private string loggedInKaryawanName;
         private string userRole;
@@ -432,6 +432,11 @@ namespace pabdproject
         }
 
         private void dgvCuti_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void FormCutiPengajuan_Load_1(object sender, EventArgs e)
         {
 
         }

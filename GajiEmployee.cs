@@ -15,7 +15,7 @@ namespace pabdproject
     public partial class GajiEmployee : Form
     {
         private readonly string userRole;
-        private string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
         private int selectedID_Karyawan = -1;
 
         public GajiEmployee(string role)

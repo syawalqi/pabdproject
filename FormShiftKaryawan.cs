@@ -14,7 +14,7 @@ namespace pabdproject
 {
     public partial class FormShiftKaryawan : Form
     {
-        private readonly string connectionString = "Data Source=BILLAAA\\SA;Initial Catalog=MANDAK;Integrated Security=True";
+        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
         private int selectedShiftId = -1; // Default value, menandakan tidak ada baris yang dipilih
         private string userRole;
         private readonly MemoryCache cache = MemoryCache.Default;

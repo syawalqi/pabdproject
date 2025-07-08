@@ -18,7 +18,7 @@ namespace pabdproject
     public partial class Form4 : Form
     {
         private readonly string userRole;
-        private readonly string connectionString = "Data Source=BILLAAA\\SA; Initial Catalog=MANDAK;Integrated Security=True";
+        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
 
         private readonly MemoryCache _cache = MemoryCache.Default;
         private const string CacheKey = "KaryawanData";
@@ -137,23 +137,37 @@ namespace pabdproject
         // Tombol Refresh, sekarang juga menampilkan analisis data
         private void button6_Click(object sender, EventArgs e)
         {
-            // 1. Muat ulang data
+            // Mulai stopwatch
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            // 1. Hapus cache & muat ulang data dari database
             _cache.Remove(CacheKey);
             LoadKaryawanData();
 
-            // 2. Tampilkan analisis setelah data dimuat
+            // 2. Analisis data
             if (dataGridView1.DataSource is DataTable dt)
             {
                 int totalRows = dt.Rows.Count;
                 int adminCount = dt.AsEnumerable().Count(row => row.Field<string>("Role") == "admin");
                 int employeeCount = dt.AsEnumerable().Count(row => row.Field<string>("Role") == "employee");
-                MessageBox.Show($"Total Data: {totalRows}\nAdmin: {adminCount}\nEmployee: {employeeCount}", "Analisis Data Karyawan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // 3. Stop timing
+                stopwatch.Stop();
+                long elapsed = stopwatch.ElapsedMilliseconds;
+
+                MessageBox.Show(
+                    $"Total Data: {totalRows}\nAdmin: {adminCount}\nEmployee: {employeeCount}\n\nWaktu load: {elapsed} ms",
+                    "Analisis Data Karyawan + Timing",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
             }
             else
             {
                 MessageBox.Show("Data belum dimuat atau tidak valid.");
             }
         }
+
 
         // Tombol Analisis SQL (Fungsi tidak berubah, sudah benar)
         private void btnAnalisis_Click(object sender, EventArgs e)
@@ -405,8 +419,55 @@ namespace pabdproject
         {
 
         }
-        #endregion
 
-       
+
+        private void SearchKaryawan(string keyword)
+        {
+            string trimmed = keyword.Trim();
+            if (string.IsNullOrWhiteSpace(trimmed))
+            {
+                LoadKaryawanData();
+                return;
+            }
+
+            string query = @"
+                SELECT ID_Karyawan, Nama, Jabatan, Departemen, Tanggal_Masuk, Role
+                FROM Karyawan
+                WHERE Nama LIKE @kw
+                   OR Jabatan LIKE @kw
+                   OR Departemen LIKE @kw
+                   OR Role LIKE @kw;
+                ";
+
+            DataTable dt = new DataTable();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@kw", trimmed + "%");
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+
+                dataGridView1.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error during search: " + ex.Message);
+            }
+        }
+
+
+        private void btnCari_Click_1(object sender, EventArgs e)
+        {
+            SearchKaryawan(txtSearch.Text);
+        }
+
+        #endregion
     }
 }
