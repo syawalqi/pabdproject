@@ -15,12 +15,14 @@ namespace pabdproject
     public partial class PreviewImportForm : Form
     {
         private readonly string userRole;
-        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+       
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
 
         public PreviewImportForm(DataTable data)
         {
             InitializeComponent();
             dataGridView1.DataSource = data;
+            connect = Koneksi.GetConnectionString();
         }
 
         private void PreviewImportForm_Load(object sender, EventArgs e)
@@ -76,7 +78,7 @@ namespace pabdproject
                     string passwd = row.Table.Columns.Contains("Passwd") ? row["Passwd"]?.ToString().Trim() : "defaultPass";
                     string role = row.Table.Columns.Contains("Role") ? row["Role"]?.ToString().Trim().ToLower() : "employee";
 
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(connect))
                     {
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand("TambahKaryawan", conn))

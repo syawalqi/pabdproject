@@ -13,11 +13,12 @@ namespace pabdproject
     public partial class Form2 : Form
     {
         private readonly string userRole;
-
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         public Form2(string role)
         {
             InitializeComponent();
             userRole = role;
+            connect = Koneksi.GetConnectionString();
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -32,11 +33,10 @@ namespace pabdproject
                 button3.Visible = false; // Hide "Karyawan List"
                 button4.Visible = false; // Hide admin feature button (Gaji Employee)
 
-                // Tampilkan tombol Cuti untuk karyawan
-                // Asumsikan Anda telah menambahkan tombol dengan nama 'btnCuti' di designer
                 bttnCuti.Visible = true;
                 bttnCuti.Text = "Ajukan/Lihat Cuti";
                 bttnShiftKaryawan.Visible = false;
+                btnGrafikGaji.Visible = false;
             }
             else if (userRole == "admin" || userRole == "hrd") // Pastikan 'hrd' ada di sini
             {
@@ -49,6 +49,7 @@ namespace pabdproject
                 bttnCuti.Visible = true;
                 bttnCuti.Text = "Kelola Cuti";
                 bttnShiftKaryawan.Visible = true;
+                btnGrafikGaji.Visible = true;
             }
             else
             {
@@ -171,6 +172,13 @@ namespace pabdproject
             var shiftForm = new FormShiftKaryawan(userRole); // <--- Pastikan baris ini sudah benar
             shiftForm.Show(); // Tampilkan FormShiftKaryawan
             this.Hide(); // Sembunyikan Form2 saat FormShiftKaryawan terbuka
+        }
+
+        private void btnGrafikGaji_Click(object sender, EventArgs e)
+        {
+            GrafikGaji formGrafikGaji = new GrafikGaji(); // Sesuaikan nama class jika berbeda
+            formGrafikGaji.Show(); // Tampilkan form grafik
+            this.Hide(); // Sembunyikan form dashboard
         }
     }
 }

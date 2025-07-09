@@ -16,7 +16,8 @@ namespace pabdproject
     public partial class GajiEmployee : Form
     {
         private readonly string userRole;
-        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+        
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private int selectedID_Karyawan = -1;
         private readonly MemoryCache _cache = MemoryCache.Default;
         private const string CacheKey = "GajiData";
@@ -28,6 +29,7 @@ namespace pabdproject
             // Mengganti event handler ke CellClick untuk pemilihan baris dengan satu klik
             this.dataGajiKaryawan.CellContentClick -= new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGajiKaryawan_CellContentClick);
             this.dataGajiKaryawan.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGajiKaryawan_CellClick);
+            connect = Koneksi.GetConnectionString();
         }
 
         private void LoadJoinedData()
@@ -38,7 +40,7 @@ namespace pabdproject
                 return;
             }
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 string query = @"
             SELECT
@@ -145,7 +147,7 @@ namespace pabdproject
                 return;
             }
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 SqlTransaction transaction = null;
                 try
@@ -203,7 +205,7 @@ namespace pabdproject
         private void bttnAnalisisGaji_Click(object sender, EventArgs e)
         {
             var statsBuilder = new StringBuilder();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 conn.InfoMessage += (obj, args) => {
                     statsBuilder.AppendLine(args.Message);

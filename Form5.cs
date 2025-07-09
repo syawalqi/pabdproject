@@ -15,7 +15,8 @@ namespace pabdproject
     public partial class Form5 : Form
     {
         private readonly string userRole;
-        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+        
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
 
         // Cache instance and key
         private readonly MemoryCache _cache = MemoryCache.Default;
@@ -25,6 +26,7 @@ namespace pabdproject
         {
             InitializeComponent();
             userRole = role;
+            connect = Koneksi.GetConnectionString();
         }
 
         private void Form5_Load(object sender, EventArgs e)
@@ -78,7 +80,7 @@ namespace pabdproject
                 INNER JOIN Karyawan k ON h.ID_Karyawan = k.ID_Karyawan";
                 try
                 {
-                    using (var conn = new SqlConnection(connectionString))
+                    using (var conn = new SqlConnection(connect))
                     using (var da = new SqlDataAdapter(query, conn))
                     {
                         dt = new DataTable();
@@ -114,7 +116,7 @@ namespace pabdproject
 
             try
             {
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SqlConnection(connect))
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@ID_Kehadiran", idKehadiran);
@@ -164,7 +166,7 @@ namespace pabdproject
 
         private void EnsureAttendanceIndexes()
         {
-            using (var conn = new SqlConnection(connectionString))
+            using (var conn = new SqlConnection(connect))
             {
                 try
                 {
@@ -246,7 +248,7 @@ namespace pabdproject
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 using (SqlCommand cmd = new SqlCommand(query.ToString(), conn))
                 using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                 {
@@ -280,7 +282,7 @@ namespace pabdproject
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand("SELECT DISTINCT Status FROM Kehadiran ORDER BY Status", conn))
@@ -301,5 +303,14 @@ namespace pabdproject
             }
         }
 
+        private void txtSearchNama_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void cmbStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

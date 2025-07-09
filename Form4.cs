@@ -18,8 +18,7 @@ namespace pabdproject
     public partial class Form4 : Form
     {
         private readonly string userRole;
-        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
-
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private readonly MemoryCache _cache = MemoryCache.Default;
         private const string CacheKey = "KaryawanData";
 
@@ -27,6 +26,7 @@ namespace pabdproject
         {
             InitializeComponent();
             userRole = role;
+            connect = Koneksi.GetConnectionString();
         }
 
         private void Form4_Load(object sender, EventArgs e)
@@ -48,7 +48,7 @@ namespace pabdproject
 
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(connect))
                     using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
                     {
                         dt = new DataTable();
@@ -96,7 +96,7 @@ namespace pabdproject
 
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(connect))
                     using (SqlCommand cmd = new SqlCommand("HapusKaryawan", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -173,7 +173,7 @@ namespace pabdproject
         private void btnAnalisis_Click(object sender, EventArgs e)
         {
             var statsBuilder = new StringBuilder();
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 conn.InfoMessage += (obj, args) => {
                     statsBuilder.AppendLine(args.Message);
@@ -253,7 +253,7 @@ namespace pabdproject
             Button btnSimpan = new Button { Text = "Simpan" };
             btnSimpan.Click += (s, ev) =>
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 using (SqlCommand cmd = new SqlCommand("UpdateKaryawan", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -321,7 +321,7 @@ namespace pabdproject
 
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    using (SqlConnection conn = new SqlConnection(connect))
                     using (SqlCommand cmd = new SqlCommand("TambahKaryawan", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -396,7 +396,10 @@ namespace pabdproject
         private void OnlyLetters_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar) && !char.IsWhiteSpace(e.KeyChar))
+            {
                 e.Handled = true;
+                MessageBox.Show("Hanya huruf dan spasi yang diizinkan untuk kolom ini.", "Input Tidak Valid", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void AddFormRow(Form form, string labelText, Control inputControl, int top)
@@ -443,7 +446,7 @@ namespace pabdproject
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@kw", trimmed + "%");

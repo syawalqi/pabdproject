@@ -14,10 +14,13 @@ namespace pabdproject
 {
     public partial class exportreport: Form
     {
+        private string strKonek;
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private readonly string userRole;
         public exportreport()
         {
             InitializeComponent();
+            strKonek = Koneksi.GetConnectionString();
         }
 
         private void exportreport_Load(object sender, EventArgs e)
@@ -31,7 +34,7 @@ namespace pabdproject
 
         private void SetupReportViewer()
         {
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+           
 
             // SQL query to retrieve the required data from the database
             string query = @"
@@ -43,7 +46,7 @@ namespace pabdproject
             DataTable dt = new DataTable();
 
             // Use SqlDataAdapter to fill the DataTable with data from the database
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 SqlDataAdapter da = new SqlDataAdapter(query, conn);
                 da.Fill(dt);

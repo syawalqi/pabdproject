@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ namespace pabdproject
 {
     public partial class Form1 : Form
     {
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private string userRole;
 
         // Modified constructor to accept user role as a parameter
@@ -20,6 +22,7 @@ namespace pabdproject
         {
             InitializeComponent();
             userRole = role;  // Store the role for later use
+            connect = Koneksi.GetConnectionString();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -43,7 +46,8 @@ namespace pabdproject
                 radioButton1.Enabled = true;
                 radioButton2.Enabled = true;
 
-                // Admin bisa atur tanggal jika perlu, jadi dibiarkan aktif
+                dateTimePicker1.Value = DateTime.Today;
+                dateTimePicker1.Enabled = false;
             }
         }
 
@@ -87,12 +91,11 @@ namespace pabdproject
                 return;
             }
 
-            // Connection string for SQL Server
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+            
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     conn.Open();
 

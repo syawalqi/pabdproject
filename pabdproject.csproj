@@ -119,6 +119,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -172,6 +173,12 @@
     <Compile Include="Form5.Designer.cs">
       <DependentUpon>Form5.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormIpAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormIpAddress.Designer.cs">
+      <DependentUpon>FormIpAddress.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormShiftKaryawan.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -184,6 +191,13 @@
     <Compile Include="GajiEmployee.Designer.cs">
       <DependentUpon>GajiEmployee.cs</DependentUpon>
     </Compile>
+    <Compile Include="GrafikGaji.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GrafikGaji.Designer.cs">
+      <DependentUpon>GrafikGaji.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Koneksi.cs" />
     <Compile Include="presensikaryawan.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -218,11 +232,17 @@
     <EmbeddedResource Include="Form5.resx">
       <DependentUpon>Form5.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormIpAddress.resx">
+      <DependentUpon>FormIpAddress.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormShiftKaryawan.resx">
       <DependentUpon>FormShiftKaryawan.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GajiEmployee.resx">
       <DependentUpon>GajiEmployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GrafikGaji.resx">
+      <DependentUpon>GrafikGaji.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="laporanattendance.rdlc" />
     <EmbeddedResource Include="PreviewImportForm.resx">

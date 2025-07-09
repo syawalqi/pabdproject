@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
-
 namespace pabdproject
 {
-    public partial class Form3: Form
+    public partial class Form3 : Form
     {
         public Form3()
         {
@@ -28,20 +27,19 @@ namespace pabdproject
             tip.SetToolTip(txtusername, "Enter your name here");
         }
 
-
         private void Form3_Load(object sender, EventArgs e)
         {
-
+            // Tidak ada logika koneksi di sini saat form dimuat
         }
 
         private void txtusername_TextChanged(object sender, EventArgs e)
         {
-
+            // Optional: handle text changed event
         }
 
         private void txtPassword_TextChanged(object sender, EventArgs e)
         {
-
+            // Optional: handle text changed event
         }
 
         public static int LoggedInUserID = -1;
@@ -64,9 +62,11 @@ namespace pabdproject
                 return;
             }
 
-            string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+            // Ubah ini: Koneksi kn = new Koneksi(); // Tidak perlu instansi lagi
+            // Ubah ini: string connect = "";
+            string connect = Koneksi.GetConnectionString(); // <<< --- Perubahan di sini
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 try
                 {
@@ -104,7 +104,5 @@ namespace pabdproject
                 }
             }
         }
-
-
     }
 }

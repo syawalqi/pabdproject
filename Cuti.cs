@@ -1,4 +1,4 @@
-﻿// File: FormCutiPengajuan.cs
+﻿
 using System;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,21 +9,24 @@ namespace pabdproject
 {
     public partial class FormCutiPengajuan : Form
     {
-        private string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA; Initial Catalog=MANDAK;Integrated Security=True";
+        // Hapus: Koneksi kn = new Koneksi(); // Tidak perlu instansi lagi
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private int loggedInKaryawanID;
-        private string loggedInKaryawanName;
+        private string loggedInKaryawanName; // Ini sepertinya tidak terpakai, bisa dihapus jika tidak ada error lain yang muncul
         private string userRole;
         private int selectedCutiIdForAdminUpdate = -1; // To store the ID_Cuti when admin clicks a row
-       
+
 
         // Constructor that accepts user role
         public FormCutiPengajuan(string role)
         {
             InitializeComponent();
+            // Ubah ini: connect = kn.connectionString();
+            connect = Koneksi.GetConnectionString(); // <<< --- Perubahan di sini
             userRole = role;
 
-            loggedInKaryawanID = Form3.LoggedInUserID;
-            loggedInKaryawanName = Form3.LoggedInUserName;
+            loggedInKaryawanID = Form3.LoggedInUserID; // Menggunakan properti statis dari Form3
+            loggedInKaryawanName = Form3.LoggedInUserName; // Menggunakan properti statis dari Form3
 
             // Apply styling
             ApplyCutiFormStyling();
@@ -110,9 +113,10 @@ namespace pabdproject
 
         private void ApplyCutiFormStyling()
         {
- 
+
             foreach (Control control in this.Controls)
             {
+                // Memeriksa apakah dgvCuti tidak null sebelum mengaksesnya
                 if (dgvCuti != null)
                 {
                     dgvCuti.Font = new Font("Segoe UI", 9);
@@ -124,7 +128,7 @@ namespace pabdproject
                     dgvCuti.EnableHeadersVisualStyles = false;
                 }
             }
-            
+
         }
 
         private void LoadCutiData()
@@ -132,7 +136,7 @@ namespace pabdproject
             DataTable dtCuti = new DataTable();
             string query;
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 if (userRole == "employee")
                 {
@@ -218,7 +222,7 @@ namespace pabdproject
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     using (SqlCommand cmd = new SqlCommand("AjukanCuti", conn))
                     {
@@ -251,8 +255,6 @@ namespace pabdproject
         {
             // Tidak perlu ada logika di sini saat ini, karena perubahan status dilakukan via tombol "Update Status Cuti"
         }
-
-        // Metode btnBatalCuti_Click sudah dihapus, karena tombolnya juga dihapus.
 
         private void ClearFormInput()
         {
@@ -377,7 +379,6 @@ namespace pabdproject
             string newStatus = cmbStatus_Cuti.SelectedItem.ToString();
 
             // Opsional: Tambahkan input untuk Keterangan_Approval (misalnya, jika status ditolak)
-            // Untuk saat ini, kita akan menggunakan string kosong atau null jika tidak ada input khusus.
             string keteranganApproval = string.Empty;
             if (newStatus == "Ditolak")
             {
@@ -398,7 +399,7 @@ namespace pabdproject
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     using (SqlCommand cmd = new SqlCommand("UpdateStatusCuti", conn))
                     {
@@ -428,17 +429,20 @@ namespace pabdproject
 
         private void txtPILIH_TextChanged(object sender, EventArgs e)
         {
-
+            // Optional: handle text changed event
         }
 
         private void dgvCuti_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            // Optional: handle click event
         }
 
         private void FormCutiPengajuan_Load_1(object sender, EventArgs e)
         {
-
+            // Ini mungkin duplikasi dari FormCutiPengajuan_Load,
+            // Pastikan Anda hanya punya satu metode Load yang di-subscribe ke event Load form.
+            // Jika Anda punya dua, hapus salah satunya atau pastikan hanya satu yang aktif.
+            // Untuk amannya, biarkan yang pertama (FormCutiPengajuan_Load) dan hapus atau komen yang ini.
         }
     }
 }

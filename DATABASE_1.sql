@@ -38,6 +38,9 @@ ALTER TABLE Kehadiran
 ALTER TABLE Kehadiran
     ALTER COLUMN Waktu_Keluar DATETIME2 NULL;
 
+ALTER TABLE Kehadiran
+	ADD CONSTRAINT UQ_Kehadiran_KaryawanTanggal UNIQUE (ID_Karyawan, Tanggal);
+
 ------------------------------------------------------
 ---(INDEXES UNTUK KEHADIRAN))!!!!
 CREATE NONCLUSTERED INDEX idx_Kehadiran_Karyawan_Tanggal
@@ -576,7 +579,7 @@ BEGIN
         Departemen = @Departemen
     WHERE ID_Karyawan = @ID_Karyawan;
 END
-GO
+
 
 -- Stored procedure to insert or update Gaji data (Upsert)
 CREATE PROCEDURE sp_UpsertGaji
@@ -598,11 +601,124 @@ BEGIN
         VALUES (@ID_Karyawan, @Gaji_Pokok);
     END
 END
-GO
+
 
 ----------(GAJIKARYAWAN INDEXES)!!!!!
 
 CREATE NONCLUSTERED INDEX idx_Karyawan_ID ON Karyawan(ID_Karyawan);
 CREATE NONCLUSTERED INDEX idx_Gaji_ID ON Gaji(ID_Karyawan);
 
-----------
+-------------------------------------------------------
+
+CREATE PROCEDURE GetAllShiftsWithKaryawan
+AS
+BEGIN
+    SELECT
+        s.ID_Shift,
+        k.ID_Karyawan,
+        k.Nama AS NamaKaryawan,
+        s.Hari_Kerja,
+        s.Shift_Mulai,
+        s.Shift_Selesai
+    FROM Shifts s
+    INNER JOIN Karyawan k ON s.ID_Karyawan = k.ID_Karyawan
+    ORDER BY k.Nama, s.Hari_Kerja;
+END;
+
+
+CREATE PROCEDURE AddShift
+    @ID_Karyawan INT,
+    @Hari_Kerja NVARCHAR(20),
+    @Shift_Mulai TIME,
+    @Shift_Selesai TIME
+AS
+BEGIN
+    SET NOCOUNT ON; -- Mencegah pengembalian jumlah baris yang terpengaruh oleh perintah
+
+    -- Validasi: Pastikan ID_Karyawan ada di tabel Karyawan
+    IF NOT EXISTS (SELECT 1 FROM Karyawan WHERE ID_Karyawan = @ID_Karyawan)
+    BEGIN
+        RAISERROR('ID Karyawan tidak ditemukan.', 16, 1);
+        RETURN;
+    END
+
+    -- Validasi: Pastikan Hari_Kerja adalah nilai yang valid
+    IF @Hari_Kerja NOT IN ('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu')
+    BEGIN
+        RAISERROR('Hari kerja tidak valid. Pilih antara Senin, Selasa, Rabu, Kamis, Jumat, Sabtu, atau Minggu.', 16, 1);
+        RETURN;
+    END
+
+    -- Validasi: Pastikan Shift_Selesai lebih besar dari Shift_Mulai (sudah ada CHECK constraint, tapi baik untuk validasi di SP juga)
+    IF @Shift_Selesai <= @Shift_Mulai
+    BEGIN
+        RAISERROR('Waktu Shift Selesai harus setelah Waktu Shift Mulai.', 16, 1);
+        RETURN;
+    END
+
+    -- Validasi: Cek tumpang tindih shift untuk karyawan pada hari yang sama
+    IF EXISTS (
+        SELECT 1 FROM Shifts
+        WHERE ID_Karyawan = @ID_Karyawan AND Hari_Kerja = @Hari_Kerja
+        AND (
+            (@Shift_Mulai BETWEEN Shift_Mulai AND Shift_Selesai) OR
+            (@Shift_Selesai BETWEEN Shift_Mulai AND Shift_Selesai) OR
+            (Shift_Mulai BETWEEN @Shift_Mulai AND @Shift_Selesai)
+        )
+    )
+    BEGIN
+        RAISERROR('Karyawan sudah memiliki shift yang tumpang tindih pada hari tersebut.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO Shifts (ID_Karyawan, Hari_Kerja, Shift_Mulai, Shift_Selesai)
+    VALUES (@ID_Karyawan, @Hari_Kerja, @Shift_Mulai, @Shift_Selesai);
+END;
+
+
+CREATE PROCEDURE DeleteShift
+    @ID_Shift INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Validasi: Pastikan ID_Shift yang akan dihapus ada
+    IF NOT EXISTS (SELECT 1 FROM Shifts WHERE ID_Shift = @ID_Shift)
+    BEGIN
+        RAISERROR('Shift dengan ID tersebut tidak ditemukan.', 16, 1);
+        RETURN;
+    END
+
+    DELETE FROM Shifts
+    WHERE ID_Shift = @ID_Shift;
+END;
+
+
+
+SELECT
+    k.Departemen,
+    AVG(g.Gaji_Pokok + ISNULL(g.Tunjangan, 0) - ISNULL(g.Potongan, 0)) AS Rata_Rata_Gaji
+FROM Karyawan k
+INNER JOIN Gaji g ON k.ID_Karyawan = g.ID_Karyawan
+GROUP BY k.Departemen
+ORDER BY Rata_Rata_Gaji DESC;
+
+
+SELECT
+    k.Jabatan,
+    AVG(g.Gaji_Pokok + ISNULL(g.Tunjangan, 0) - ISNULL(g.Potongan, 0)) AS Rata_Rata_Gaji
+FROM Karyawan k
+INNER JOIN Gaji g ON k.ID_Karyawan = g.ID_Karyawan
+GROUP BY k.Jabatan
+ORDER BY Rata_Rata_Gaji DESC;
+
+SELECT
+    Jabatan,
+    COUNT(ID_Karyawan) AS Jumlah_Karyawan
+FROM Karyawan
+GROUP BY Jabatan
+ORDER BY Jumlah_Karyawan DESC;
+
+SELECT
+    SUM(Gaji_Pokok) AS Total_Gaji_Pokok
+FROM Gaji;

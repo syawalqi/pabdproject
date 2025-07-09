@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -29,6 +30,8 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnGrafikGaji = new System.Windows.Forms.Button();
+            this.bttnShiftKaryawan = new System.Windows.Forms.Button();
             this.bttnCuti = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -37,13 +40,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.Logout = new System.Windows.Forms.Button();
-            this.bttnShiftKaryawan = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(176)))), ((int)(((byte)(180)))));
+            this.panel1.Controls.Add(this.btnGrafikGaji);
             this.panel1.Controls.Add(this.bttnShiftKaryawan);
             this.panel1.Controls.Add(this.bttnCuti);
             this.panel1.Controls.Add(this.button4);
@@ -57,6 +60,30 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(172, 360);
             this.panel1.TabIndex = 0;
+            // 
+            // btnGrafikGaji
+            // 
+            this.btnGrafikGaji.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.btnGrafikGaji.Location = new System.Drawing.Point(12, 249);
+            this.btnGrafikGaji.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnGrafikGaji.Name = "btnGrafikGaji";
+            this.btnGrafikGaji.Size = new System.Drawing.Size(147, 34);
+            this.btnGrafikGaji.TabIndex = 6;
+            this.btnGrafikGaji.Text = "Grafik Gaji";
+            this.btnGrafikGaji.UseVisualStyleBackColor = false;
+            this.btnGrafikGaji.Click += new System.EventHandler(this.btnGrafikGaji_Click);
+            // 
+            // bttnShiftKaryawan
+            // 
+            this.bttnShiftKaryawan.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.bttnShiftKaryawan.Location = new System.Drawing.Point(12, 287);
+            this.bttnShiftKaryawan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.bttnShiftKaryawan.Name = "bttnShiftKaryawan";
+            this.bttnShiftKaryawan.Size = new System.Drawing.Size(147, 34);
+            this.bttnShiftKaryawan.TabIndex = 5;
+            this.bttnShiftKaryawan.Text = "Shift Karyawan";
+            this.bttnShiftKaryawan.UseVisualStyleBackColor = false;
+            this.bttnShiftKaryawan.Click += new System.EventHandler(this.bttnShiftKaryawan_Click);
             // 
             // bttnCuti
             // 
@@ -133,6 +160,9 @@
             // 
             // label4
             // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(361, 62);
@@ -153,18 +183,6 @@
             this.Logout.Text = "Logout";
             this.Logout.UseVisualStyleBackColor = false;
             this.Logout.Click += new System.EventHandler(this.Logout_Click);
-            // 
-            // bttnShiftKaryawan
-            // 
-            this.bttnShiftKaryawan.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.bttnShiftKaryawan.Location = new System.Drawing.Point(12, 249);
-            this.bttnShiftKaryawan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.bttnShiftKaryawan.Name = "bttnShiftKaryawan";
-            this.bttnShiftKaryawan.Size = new System.Drawing.Size(147, 34);
-            this.bttnShiftKaryawan.TabIndex = 5;
-            this.bttnShiftKaryawan.Text = "Shift Karyawan";
-            this.bttnShiftKaryawan.UseVisualStyleBackColor = false;
-            this.bttnShiftKaryawan.Click += new System.EventHandler(this.bttnShiftKaryawan_Click);
             // 
             // Form2
             // 
@@ -198,5 +216,6 @@
         private System.Windows.Forms.Button Logout;
         private System.Windows.Forms.Button bttnCuti;
         private System.Windows.Forms.Button bttnShiftKaryawan;
+        private System.Windows.Forms.Button btnGrafikGaji;
     }
 }

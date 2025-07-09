@@ -9,12 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.Caching;
+using MathNet.Numerics;
+using NPOI.POIFS.Crypt.Dsig;
+using NPOI.SS.Formula.Functions;
+using static NPOI.SS.Formula.PTG.ArrayPtg;
 
 namespace pabdproject
 {
     public partial class FormShiftKaryawan : Form
     {
-        private readonly string connectionString = "Data Source=LAPTOP-PFIH6R5H\\GALIHMAULANA;Initial Catalog=MANDAK;Integrated Security=True";
+        
+        string connect = ""; // Deklarasikan variabel untuk menyimpan string koneksi
         private int selectedShiftId = -1; // Default value, menandakan tidak ada baris yang dipilih
         private string userRole;
         private readonly MemoryCache cache = MemoryCache.Default;
@@ -29,6 +34,7 @@ namespace pabdproject
             InitializeComponent();
             ApplyShiftFormStyling();
             this.userRole = userRole;
+            connect = Koneksi.GetConnectionString();
         }
         private void LoadShiftData()
         {
@@ -43,7 +49,7 @@ namespace pabdproject
             else
             {
                 dt = new DataTable();
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     try
                     {
@@ -140,7 +146,7 @@ namespace pabdproject
                 return; // Hentikan proses jika validasi gagal
             }
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connect))
             {
                 try
                 {
@@ -263,7 +269,7 @@ namespace pabdproject
 
             if (result == DialogResult.Yes)
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connect))
                 {
                     try
                     {
@@ -302,7 +308,7 @@ namespace pabdproject
         private void ApplyShiftFormStyling()
         {
 
-            foreach (Control control in this.Controls)
+            foreach (System.Windows.Forms.Control control in this.Controls)
             {
                 if (dgvShifts != null)
                 {
